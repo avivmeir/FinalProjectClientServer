@@ -7,37 +7,17 @@ import LoginForm from './components/LoginForm'
 import ForgotPassword from './components/ForgotPassword'
 import Dashboard from './components/Dashboard';
 import Footer from './components/Footer';
+import HeaderSign from './components/HeaderSign';
 
 class App extends Component {
   state = {
-    loged: false
+    loged: true
   }
   getNav = () => {
     console.log(`getNav : ${this.state.loged}`)
     if (this.state.loged === false) {
       return (
-        <header>
-          <nav className="navbar navbar-expand-lg navbar-dark bg-gradient-primary">
-            <a className="navbar-brand mx-2">Webshop | </a>
-            <div
-              className="collapse navbar-collapse"
-              id="navbarSupportedContent"
-            >
-              <ul className="navbar-nav ml-auto">
-                <li className="nav-item active">
-                  <Link className="nav-link" to={'/sign-up'}>
-                    Create Account
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to={'/sign-in'}>
-                    Login
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </nav>
-        </header>
+        <HeaderSign/>
       )
     }
     else return (<div />)
@@ -50,7 +30,6 @@ class App extends Component {
       return <LoginForm />
 
   }
-
   render() {
     return (
       <Router>
@@ -63,7 +42,12 @@ class App extends Component {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/dashboard" element={this.getHomePage()} />
           </Routes>
-          <Footer/>
+          {
+            this.state.loged === false ?
+              <Footer/>
+            :
+            <div/>
+          }
         </div>
       </Router>
     );
