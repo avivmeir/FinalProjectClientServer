@@ -84,7 +84,7 @@ class CreateUser extends Component {
                                                 <div className="col-sm-6">
                                                     <input type="password" className="form-control form-control-user"
                                                         id="exampleRepeatPassword" placeholder="Repeat Password"
-                                                        value={this.state.repeatPassword} onChange={this.onChangeRepeatPassword}  />
+                                                        value={this.state.repeatPassowrd} onChange={this.onChangeRepeatPassword}  />
                                                 </div>
                                             </div>
                                             <input type="submit" value="Register Account" className="btn btn-primary btn-user btn-block" />

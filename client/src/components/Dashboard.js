@@ -1,0 +1,64 @@
+import React, { Component } from 'react';
+import DashBody from './DashBody';
+import TopBar from './TopBar';
+
+class Dashboard extends Component {
+    render() {
+        return (
+            <div id="wrapper">
+                <ul className="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+                    <a className="sidebar-brand d-flex align-items-center justify-content-center" href="index.html" style ={{textTransform:"none"}}>
+                        <div className="sidebar-brand-text mx-3">My Webshop</div>
+                    </a>
+
+                    <hr className="sidebar-divider my-0" />
+
+                    <li className="nav-item active">
+                        <a className="nav-link" href="index.html">
+                            <i className="fas fa-fw fa-tachometer-alt"></i>
+                            <span className="sidebar-heading">
+                                Dashboard
+                            </span>
+                        </a>
+                    </li>
+
+                    <hr className="sidebar-divider" />
+
+                    <div className="sidebar-heading text-white">
+                        Buy:
+                    </div>
+
+                    <li className="nav-item">
+                        <a className="nav-link " href="#" >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-pc-display" viewBox="0 0 16 16">
+                                <path d="M8 1a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V1Zm1 13.5a.5.5 0 1 0 1 0 .5.5 0 0 0-1 0Zm2 0a.5.5 0 1 0 1 0 .5.5 0 0 0-1 0ZM9.5 1a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5ZM9 3.5a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 0-1h-5a.5.5 0 0 0-.5.5ZM1.5 2A1.5 1.5 0 0 0 0 3.5v7A1.5 1.5 0 0 0 1.5 12H6v2h-.5a.5.5 0 0 0 0 1H7v-4H1.5a.5.5 0 0 1-.5-.5v-7a.5.5 0 0 1 .5-.5H7V2H1.5Z" />
+                            </svg>
+                            <span className="mx-2">PC</span>
+                        </a>
+                    </li>
+
+                    <li className="nav-item">
+                        <a className="nav-link" href="#" >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-phone" viewBox="0 0 16 16">
+                                <path d="M11 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h6zM5 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H5z" />
+                                <path d="M8 14a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                            </svg>
+                            <span className="mx-2">Cell Phone</span>
+                        </a>
+                    </li>
+                </ul>
+                <div id="content-wrapper" class="d-flex flex-column">
+                    <TopBar />
+                    <div class="container-fluid my-4" >
+                        <DashBody />
+                    </div>
+                </div>
+
+
+            </div>
+        );
+    }
+}
+
+export default Dashboard;
