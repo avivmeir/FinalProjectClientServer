@@ -26,10 +26,10 @@ app.use(express.urlencoded({ extended: false }));
 
 // Step 3
 
-if (process.env.NODE_ENV === 'production') {
-    app.use(express.static('client/build'));
-}
-
+// if (process.env.NODE_ENV === 'production') {
+//     app.use(express.static('client/build'));
+// }
+app.use(express.static('client/build'));
 
 // HTTP request logger
 app.use(morgan('tiny'));
