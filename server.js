@@ -3,42 +3,38 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const path = require('path');
+
 const app = express();
 const PORT = process.env.PORT || 8080; // Step 1
 
 const routes = require('./routes/api');
 const mongoUri = 'mongodb+srv://user:Aa123456@cluster0.4pzbb.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
+
 // Step 2
-mongoose
-    .connect(process.env.MONGODB_URI || mongoUri || 'mongodb://localhost/mern', {
+mongoose.connect(process.env.MONGODB_URI || mongoUri || 'mongodb://localhost/mern_youtube', {
     useNewUrlParser: true,
     useUnifiedTopology: true
-    })
-    .then((x) => {
-    console.log(`Connected to Mongo! Database name: "${x.connections[0].name}"`)
+});
+
+mongoose.connection.on('connected', () => {
+    console.log('Mongoose is connected!!!!');
 });
 
 // Data parsing
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 
 // Step 3
 
-// if (process.env.NODE_ENV === 'production') {
-//     app.use(express.static('client/build'));
-// }
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static('client/build'));
+}
+
 
 // HTTP request logger
 app.use(morgan('tiny'));
 app.use('/api', routes);
 
-app.get('/api',(req, res)=>{
-    const data ={
-        username:"user",
-        age:5
-    }
-    res.json(data)
-} )
 
 
 
