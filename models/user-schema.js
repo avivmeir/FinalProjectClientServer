@@ -7,7 +7,8 @@ let userSchema = new Schema({
     email: {
         type: String
     }
-}, {
+    },
+    {
         collection: 'users'
     })
 module.exports = mongoose.model('User', userSchema)

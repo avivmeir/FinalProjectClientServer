@@ -25,7 +25,6 @@ router.post('/users/save',(req, res) => {
             res.status(500).json({ msg: 'Sorry, internal server errors' });
             return;
         }
-        // BlogPost
         return res.json({
             msg: 'Your data has been saved'
         });
