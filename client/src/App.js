@@ -11,7 +11,7 @@ import HeaderSign from './components/HeaderSign';
 
 class App extends Component {
   state = {
-    loged: true
+    loged: false
   }
   getNav = () => {
     console.log(`getNav : ${this.state.loged}`)
@@ -46,7 +46,7 @@ class App extends Component {
             this.state.loged === false ?
               <Footer/>
             :
-            <div/>
+              <div/>
           }
         </div>
       </Router>
