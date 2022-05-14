@@ -8,10 +8,9 @@ const app = express();
 const PORT = process.env.PORT || 8080; // Step 1
 
 const routes = require('./routes/api');
-const mongoUri = 'mongodb+srv://user:Aa123456@cluster0.4pzbb.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
 
 // Step 2
-mongoose.connect(process.env.MONGODB_URI || mongoUri || 'mongodb://localhost/mern_youtube', {
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/mern_youtube', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
@@ -26,10 +25,11 @@ app.use(express.urlencoded({ extended: false }));
 
 // Step 3
 
-// if (process.env.NODE_ENV === 'production') {
-//     app.use(express.static('client/build'));
-// }
-app.use(express.static('client/build'));
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static('client/build'));
+}
+
+//app.use(express.static('client/build'));
 
 // HTTP request logger
 app.use(morgan('tiny'));
