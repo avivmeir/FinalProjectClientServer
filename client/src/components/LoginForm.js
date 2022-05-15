@@ -1,30 +1,37 @@
 import React, { Component } from 'react';
-
 class LoginForm extends Component {
     state = {
         email: '',
-        password: ''
+        password: '',
+        isRememberMe: false
     }
     onChangeEmail = (e) => {
-        this.setState({ name: e.target.value })
+        this.setState({ email: e.target.value })
     }
     onChangePassword = (e) => {
-        this.setState({ email: e.target.value })
+        this.setState({ password: e.target.value })
+    }
+    onChangeRememberMe = (e)=>{
+        this.setState({isRememberMe : e.target.value})
+    }
+    onSend(){
+        this.props.handleLogin(true)
+        console.log("after login")
     }
     onSubmit = (e) => {
         e.preventDefault()
         const userObject = {
-            name: this.state.email,
-            email: this.state.password
-        };
-
+            email: this.state.email,
+            password: this.state.password
+    };
         //   axios.post("/api/users/save", userObject)
         //       .then((res) => {
         //           console.log(res.data)
         //       }).catch((error) => {
         //           console.log(error)
         //       });
-        this.setState({ name: '', email: '' })
+        //this.setState({ name: '', email: '' ,isRememberMe:false})
+        this.props.handleLogin(true)
     }
     render() {
         return (
@@ -41,26 +48,28 @@ class LoginForm extends Component {
                                                 <div className="text-center">
                                                     <h1 className="h4 text-gray-900 mb-4">Welcome Back!</h1>
                                                 </div>
-                                                <form className="user">
+                                                <form className="user" onSubmit={this.onSubmit}>
                                                     <div className="form-group">
                                                         <input type="email" className="form-control form-control-user"
+                                                            value={this.state.email} onChange={this.onChangeEmail}
                                                             id="exampleInputEmail" aria-describedby="emailHelp"
                                                             placeholder="Enter Email Address..." />
                                                     </div>
                                                     <div className="form-group">
                                                         <input type="password" className="form-control form-control-user"
+                                                        value={this.state.password} onChange={this.onChangePassword}
                                                             id="exampleInputPassword" placeholder="Password" />
                                                     </div>
                                                     <div className="form-group">
                                                         <div className="custom-control custom-checkbox small">
-                                                            <input type="checkbox" className="custom-control-input" id="customCheck" />
-                                                            <label className="custom-control-label" for="customCheck">Remember
-                                                                Me</label>
+                                                            <input type="checkbox" className="custom-control-input" id="customCheck" 
+                                                            value={this.state.isRememberMe} onChange={this.onChangeRememberMe}/>
+                                                            <label className="custom-control-label" htmlFor="customCheck">
+                                                                Remember Me</label>
                                                         </div>
                                                     </div>
-                                                    <a href="index.html" className="btn btn-primary btn-user btn-block">
-                                                        Login
-                                                    </a>
+                                                    <input type="submit" value="Login" className="btn btn-primary btn-user btn-block" />
+
                                                 </form>
                                                 <hr />
                                                 <div className="text-center">

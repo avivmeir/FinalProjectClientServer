@@ -9,9 +9,9 @@ class Dashboard extends Component {
         return (
             <div id="wrapper">
                 <SideNavbar/>
-                <div id="content-wrapper" class="d-flex flex-column">
-                    <TopBar />
-                    <div class="container-fluid mt-0 mb-4" >
+                <div id="content-wrapper" className="d-flex flex-column">
+                    <TopBar  handleLogout = {this.props.handleLogout} />
+                    <div className="container-fluid mt-0 mb-4" >
                         <DashBody />
                     </div>
                     <Footer/>
