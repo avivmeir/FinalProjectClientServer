@@ -31,27 +31,11 @@ if (process.env.NODE_ENV === 'production') {
     app.use(express.static('client/build'));
 }
 
-// Step 1:
-app.use(express.static(path.resolve(__dirname, "./client/build")));
-// Step 2:
-app.get("*", function (request, response) {
-  response.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
-});
-
-
-// let protected = ['transformed.js', 'main.css', 'favicon.ico']
-
-// app.get("*", (req, res) => {
-
-//   let path = req.params['0'].substring(1)
-
-//   if (protected.includes(path)) {
-//     // Return the actual file
-//     res.sendFile(`${__dirname}/build/${path}`);
-//   } else {
-//     // Otherwise, redirect to /build/index.html
-//     res.sendFile(`${__dirname}/build/index.html`);
-//   }
+// // Step 1:
+// app.use(express.static(path.resolve(__dirname, "./client/build")));
+// // Step 2:
+// app.get("*", function (request, response) {
+//   response.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
 // });
 
 
