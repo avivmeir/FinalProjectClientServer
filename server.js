@@ -36,7 +36,7 @@ if (process.env.NODE_ENV === 'production') {
 app.use(morgan('tiny'));
 app.use('/api', routes);
 
-app.get("*", (req, res) => {
+app.get("/*", (req, res) => {
     let url = path.join(__dirname, '../client/build', 'index.html');
     if (!url.startsWith('/app/')) // since we're on local windows
       url = url.substring(1);
