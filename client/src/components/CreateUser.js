@@ -33,12 +33,12 @@ class CreateUser extends Component {
             password: this.state.password,
         };
 
-        // axios.post("/api/users/save", userObject)
-        //     .then((res) => {
-        //         console.log(res.data)
-        //     }).catch((error) => {
-        //         console.log(error)
-        //     });
+        axios.post("/api/users/save", userObject)
+            .then((res) => {
+                console.log(res.data)
+            }).catch((error) => {
+                console.log(error)
+            });
         this.setState({
             firstName: '',
             lastName: '',
