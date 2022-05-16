@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 8080; // Step 1
 
 const routes = require('./routes/api');
 
-const mongoURI = 'mongodb+srv://user:Aa123456@db.g1eqm.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
+const mongoURI = 'mongodb+srv://user:webshop123@database.3qzpr.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
 
 // Step 2
 mongoose.connect(process.env.MONGODB_URI || mongoURI || 'mongodb://localhost/mern_proj', {
