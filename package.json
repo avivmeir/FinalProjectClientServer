@@ -24,5 +24,7 @@
   "main": "index.js",
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+
+  "homepage": "."
 }
