@@ -62,15 +62,15 @@ class App extends Component {
             />
             <Route
               path="/sign-up"
-              element={this.state.logged === true ? <Navigate to="/dashboard" /> : <CreateUser />}
+              element={this.state.logged === false ? <CreateUser /> : <Navigate to="/dashboard" />}
             />
             <Route
               path="/forgot-password"
-              element={this.state.logged === true ? <Navigate to="/dashboard" /> : <ForgotPassword />}
+              element={this.state.logged === false ? <ForgotPassword /> : <Navigate to="/dashboard" />}
             />
             <Route
               path="/dashboard"
-              element={this.state.logged === false ? <Navigate to="/sign-in" /> : <Dashboard handleLogout={this.handleLogout}/>}
+              element={this.state.logged === true ?  <Dashboard handleLogout={this.handleLogout}/> : <Navigate to="/sign-in" />}
             />
           </Routes>
           {

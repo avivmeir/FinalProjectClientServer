@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+
 class LoginForm extends Component {
     state = {
         email: '',
@@ -11,8 +13,8 @@ class LoginForm extends Component {
     onChangePassword = (e) => {
         this.setState({ password: e.target.value })
     }
-    onChangeRememberMe = (e)=>{
-        this.setState({isRememberMe : e.target.value})
+    onChangeRememberMe = (e) => {
+        this.setState({ isRememberMe: e.target.value })
     }
 
     onSubmit = (e) => {
@@ -20,7 +22,7 @@ class LoginForm extends Component {
         const userObject = {
             email: this.state.email,
             password: this.state.password
-    };
+        };
         //   axios.post("/api/users/save", userObject)
         //       .then((res) => {
         //           console.log(res.data)
@@ -54,13 +56,13 @@ class LoginForm extends Component {
                                                     </div>
                                                     <div className="form-group">
                                                         <input type="password" className="form-control form-control-user"
-                                                        value={this.state.password} onChange={this.onChangePassword}
+                                                            value={this.state.password} onChange={this.onChangePassword}
                                                             id="exampleInputPassword" placeholder="Password" />
                                                     </div>
                                                     <div className="form-group">
                                                         <div className="custom-control custom-checkbox small">
-                                                            <input type="checkbox" className="custom-control-input" id="customCheck" 
-                                                            value={this.state.isRememberMe} onChange={this.onChangeRememberMe}/>
+                                                            <input type="checkbox" className="custom-control-input" id="customCheck"
+                                                                value={this.state.isRememberMe} onChange={this.onChangeRememberMe} />
                                                             <label className="custom-control-label" htmlFor="customCheck">
                                                                 Remember Me</label>
                                                         </div>
@@ -70,10 +72,14 @@ class LoginForm extends Component {
                                                 </form>
                                                 <hr />
                                                 <div className="text-center">
-                                                    <a className="small" href="/forgot-password">Forgot Password?</a>
+                                                    <Link className="small" to={'/forgot-password'}>
+                                                        Forgot Password?
+                                                    </Link>
                                                 </div>
                                                 <div className="text-center">
-                                                    <a className="small" href="/sign-up">Create an Account!</a>
+                                                    <Link className="small" to={'/sign-up'}>
+                                                        Create an Account!
+                                                    </Link>
                                                 </div>
                                             </div>
                                         </div>
