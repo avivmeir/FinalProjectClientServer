@@ -1,3 +1,4 @@
+/*
 let mongoose = require('mongoose'),
     express = require('express'),
     router = express.Router();
@@ -56,3 +57,4 @@ router.route('/delete/:id').delete((req, res, next) => {
     })
 })
 module.exports=router;
+*/

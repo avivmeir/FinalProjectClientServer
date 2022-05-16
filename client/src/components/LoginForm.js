@@ -14,10 +14,7 @@ class LoginForm extends Component {
     onChangeRememberMe = (e)=>{
         this.setState({isRememberMe : e.target.value})
     }
-    onSend(){
-        this.props.handleLogin(true)
-        console.log("after login")
-    }
+
     onSubmit = (e) => {
         e.preventDefault()
         const userObject = {
