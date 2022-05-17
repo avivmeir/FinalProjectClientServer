@@ -29,17 +29,24 @@ if (process.env.NODE_ENV === 'production') {
     app.use(express.static('client/build'));
 }
 
+
 // Step 1:
 app.use(express.static(path.resolve(__dirname, "./client/build")));
-// Step 2:
-app.get("*", function (request, response) {
-  response.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
+
+app.all('/api/*', function(req, res, next){
+    console.log('General Validations');
+    next();
 });
 
+// Step 2:
+app.get("*", function (request, response,) {
+    response.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
+});
 
 // HTTP request logger
 app.use(morgan('tiny'));
 app.use('/api', routes);
+
 
 
 

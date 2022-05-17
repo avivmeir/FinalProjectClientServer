@@ -8,12 +8,12 @@ import ForgotPassword from './components/ForgotPassword'
 import Dashboard from './components/Dashboard';
 import Footer from './components/Footer';
 import HeaderSign from './components/HeaderSign';
-
+import RouteParam from './components/RouteParam'
 class App extends Component {
   constructor(props) {
     super(props)
-    this.state = JSON.parse(window.localStorage.getItem('state')) || {
-      logged: false
+    this.state =  {
+      logged: JSON.parse(window.localStorage.getItem('user')) || false
     }
   }
   setState(state) {
@@ -30,11 +30,15 @@ class App extends Component {
     }
     else return (<div />)
   }
-  handleLogin = () => {
+  handleLogin = (isRemember) => {
     this.setState({ logged: true })
+    if (isRemember){
+      window.localStorage.setItem('user',isRemember);
+    }
   }
   handleLogout = ()=>{
     this.setState({logged:false})
+    localStorage.clear();
   }
 
   render() {
@@ -75,6 +79,7 @@ class App extends Component {
               path="/dashboard"
               element={this.state.logged === true ?  <Dashboard handleLogout={this.handleLogout}/> : <Navigate to="/sign-in" />}
             />
+            <Route path = "/param/*" element = {<RouteParam />}></Route>
           </Routes>
           {
             this.state.logged === false ?

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import PopupMessage from './PopupMessage';
 

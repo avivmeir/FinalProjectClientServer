@@ -14,7 +14,7 @@ class LoginForm extends Component {
         this.setState({ password: e.target.value })
     }
     onChangeRememberMe = (e) => {
-        this.setState({ isRememberMe: e.target.value })
+        this.setState({ isRememberMe: e.target.checked })
     }
 
     
@@ -31,7 +31,8 @@ class LoginForm extends Component {
         //           console.log(error)
         //       });
         //this.setState({ name: '', email: '' ,isRememberMe:false})
-        this.props.handleLogin()
+        console.log(`login remember ${this.state.isRememberMe}`)
+        this.props.handleLogin(this.state.isRememberMe)
     }
     render() {
         return (
