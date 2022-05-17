@@ -8,26 +8,36 @@ class PopupMessage extends Component {
     render() {
         return (
             <Popup
-                trigger={<button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                    Launch demo modal popup
-                </button>}
+                trigger={<div />}
                 modal
+                open={true}
             >
 
                 {close => (
-                    <div class="p-0" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div className="p-0" id="exampleModal" tableindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div className="modal-dialog modal-lg m-0 p-0">
                             <div className="modal-content  m-0 p-0">
                                 <div className="modal-header">
                                     <h5 className="modal-title" id="exampleModalLabel">{this.props.title}</h5>
-                                    <button className="btn-close" onClick={close} data-bs-dismiss="modal" aria-label="Close"/>
+                                    <button className="btn-close" onClick={close} data-bs-dismiss="modal" aria-label="Close" />
                                 </div>
                                 <div className="modal-body">
                                     {this.props.body}
                                 </div>
                                 <div className="modal-footer">
-                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <button type="button" className="btn btn-primary">Save changes</button>
+                                    {
+                                        this.props.withOk ?
+                                            <button type="button" onClick={() => { this.props.onOk() }} className="btn btn-primary">{this.props.okBtnText}</button>
+                                            :
+                                            null
+                                    }
+                                    {
+                                        this.props.withClose ?
+                                            <button type="button" onClick={() => { this.props.onClose() }} className="btn btn-secondary" data-bs-dismiss="modal">{this.props.closeBtnText}</button>
+                                            :
+                                            null
+                                    }
+
                                 </div>
                             </div>
                         </div>

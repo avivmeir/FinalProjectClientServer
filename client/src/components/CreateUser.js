@@ -12,22 +12,12 @@ class CreateUser extends Component {
         lastName: '',
         email: '',
         password: '',
-        repeatPassowrd: ''
+        repeatPassowrd: '',
+        validation: {
+            successfulLogin: false,
+            tryValidate: false
+        }
     }
-    PopupExample = () => (
-        <Popup trigger={<button>Trigger</button>} position="top left" className='popup-content'>
-          {close => (
-            <div>
-              Content here
-              <a className="close" onClick={close}>
-                &times;
-              </a>
-            </div>
-          )}
-          {}
-        </Popup>
-      );
-
     onChangeFirstName = (e) => {
         this.setState({ firstName: e.target.value })
     }
@@ -58,17 +48,30 @@ class CreateUser extends Component {
         //     }).catch((error) => {
         //         console.log(error)
         //     });
-        this.setState({
-            firstName: '',
-            lastName: '',
-            email: '',
-            password: '',
-            repeatPassowrd: ''
-        });
-        return 
-        //this.props.handleLogin()
+        if (this.state.firstName !== '') {
+            this.setState({ validation: { successfulLogin: true, tryValidate: true } })
+        }
+        else {
+            this.setState({
+                validation: {
+                    successfulLogin: false,
+                    tryValidate: !this.state.validation.tryValidate
+                }
+            })
+        }
+
     }
 
+    componentDidUpdate() {
+        if (!this.state.validation.tryValidate)
+            this.setState({
+                validation: {
+                    successfulLogin: false,
+                    tryValidate: true
+                }
+            })
+
+    }
     render() {
         return (
             <div className="wrapper">
@@ -129,7 +132,38 @@ class CreateUser extends Component {
                         </div>
                     </div>
                 </div>
-                <PopupMessage title ={"Registration Succeed"} body = {"Welcome to our shop !!"}/>
+                {
+                    this.state.validation.successfulLogin ?
+                        <PopupMessage title={"Registration Succeed"} body={
+                            <div>
+                                <div>Hi {this.state.firstName}, Welcome to our shop !!</div>
+                                <div>You are registered with the details:</div>
+                                <div>First Name : {this.state.firstName}</div>
+                                <div>Last Name :{this.state.lastName}</div>
+                                <div>Email : {this.state.email}</div>
+                            </div>
+                        }
+                            withOk={true}
+                            okBtnText={"Continue to the shop"}
+                            onOk={this.props.handleLogin}
+                            withClose={false}
+                        />
+                        :
+                        null
+                }
+                {
+                    this.state.validation.tryValidate ?
+                        <PopupMessage title={"Error"} body={
+                            <div>
+                                <div>Missing : name </div>
+                            </div>
+                        }
+                            withOk={false}
+                            withClose={false}
+                        />
+                        :
+                        null
+                }
             </div>
         );
     }
