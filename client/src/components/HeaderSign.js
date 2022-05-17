@@ -6,7 +6,7 @@ class HeaderSign extends Component {
         return (
                 <header>
                     <nav className="navbar navbar-expand-lg navbar-dark bg-gradient-primary">
-                        <a className="navbar-brand mx-2">Webshop | </a>
+                        <span className="navbar-brand mx-2">Webshop | </span>
                         <div
                             className="collapse navbar-collapse"
                             id="navbarSupportedContent"

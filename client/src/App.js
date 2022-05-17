@@ -43,7 +43,6 @@ class App extends Component {
         <div className="App ">
           {this.getNav()}
           <Routes>
-
             <Route
               exact path="/"
               element={this.state.logged === true ?
@@ -54,16 +53,20 @@ class App extends Component {
             />
             <Route
               path="/sign-in"
-              element={this.state.logged === true ?
-                <Navigate to="/dashboard" />
-                :
+              element={this.state.logged === false ?
                 <LoginForm handleLogin={this.handleLogin} />
+                :
+                <Navigate to="/dashboard" />
               }
             />
             <Route
               path="/sign-up"
-              element={this.state.logged === false ? <CreateUser /> : <Navigate to="/dashboard" />}
+              element={this.state.logged === false ? 
+              <CreateUser handleLogin={this.handleLogin}/>
+               : 
+              <Navigate to="/dashboard" />}
             />
+            
             <Route
               path="/forgot-password"
               element={this.state.logged === false ? <ForgotPassword /> : <Navigate to="/dashboard" />}

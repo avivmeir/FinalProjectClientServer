@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css';
+import PopupMessage from './PopupMessage';
+
 
 class CreateUser extends Component {
     state = {
@@ -9,6 +14,20 @@ class CreateUser extends Component {
         password: '',
         repeatPassowrd: ''
     }
+    PopupExample = () => (
+        <Popup trigger={<button>Trigger</button>} position="top left" className='popup-content'>
+          {close => (
+            <div>
+              Content here
+              <a className="close" onClick={close}>
+                &times;
+              </a>
+            </div>
+          )}
+          {}
+        </Popup>
+      );
+
     onChangeFirstName = (e) => {
         this.setState({ firstName: e.target.value })
     }
@@ -33,19 +52,21 @@ class CreateUser extends Component {
             password: this.state.password,
         };
 
-        axios.post("/api/users/save", userObject)
-            .then((res) => {
-                console.log(res.data)
-            }).catch((error) => {
-                console.log(error)
-            });
+        // axios.post("/api/users/save", userObject)
+        //     .then((res) => {
+        //         console.log(res.data)
+        //     }).catch((error) => {
+        //         console.log(error)
+        //     });
         this.setState({
             firstName: '',
             lastName: '',
             email: '',
             password: '',
             repeatPassowrd: ''
-        })
+        });
+        return 
+        //this.props.handleLogin()
     }
 
     render() {
@@ -65,27 +86,27 @@ class CreateUser extends Component {
                                             <div className="form-group row">
                                                 <div className="col-sm-6 mb-3 mb-sm-0">
                                                     <input type="text" className="form-control form-control-user" id="exampleFirstName"
-                                                        placeholder="First Name" value={this.state.firstName} onChange={this.onChangeFirstName}/>
+                                                        placeholder="First Name" value={this.state.firstName} onChange={this.onChangeFirstName} />
                                                 </div>
                                                 <div className="col-sm-6">
                                                     <input type="text" className="form-control form-control-user" id="exampleLastName"
-                                                        placeholder="Last Name" value={this.state.lastName} onChange={this.onChangeLastName}/>
+                                                        placeholder="Last Name" value={this.state.lastName} onChange={this.onChangeLastName} />
                                                 </div>
                                             </div>
                                             <div className="form-group">
                                                 <input type="email" className="form-control form-control-user" id="exampleInputEmail"
-                                                    placeholder="Email Address" value={this.state.email} onChange={this.onChangeEmail}/>
+                                                    placeholder="Email Address" value={this.state.email} onChange={this.onChangeEmail} />
                                             </div>
                                             <div className="form-group row">
                                                 <div className="col-sm-6 mb-3 mb-sm-0">
                                                     <input type="password" className="form-control form-control-user"
-                                                        id="exampleInputPassword" placeholder="Password" 
-                                                        value={this.state.password} onChange={this.onChangePassword}/>
+                                                        id="exampleInputPassword" placeholder="Password"
+                                                        value={this.state.password} onChange={this.onChangePassword} />
                                                 </div>
                                                 <div className="col-sm-6">
                                                     <input type="password" className="form-control form-control-user"
                                                         id="exampleRepeatPassword" placeholder="Repeat Password"
-                                                        value={this.state.repeatPassowrd} onChange={this.onChangeRepeatPassword}  />
+                                                        value={this.state.repeatPassowrd} onChange={this.onChangeRepeatPassword} />
                                                 </div>
                                             </div>
                                             <input type="submit" value="Register Account" className="btn btn-primary btn-user btn-block" />
@@ -93,18 +114,22 @@ class CreateUser extends Component {
                                         </form>
                                         <hr />
                                         <div className="text-center">
-                                            <a className="small" href="/forgot-password">Forgot Password?</a>
+                                            <Link className="small" to={'/forgot-password'}>
+                                                Forgot Password?
+                                            </Link>
                                         </div>
                                         <div className="text-center">
-                                            <a className="small" href="/sign-in">Already have an account? Login!</a>
+                                            <Link className="small" to={'/sign-in'}>
+                                                Already have an account? Login!
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
+                <PopupMessage title ={"Registration Succeed"} body = {"Welcome to our shop !!"}/>
             </div>
         );
     }

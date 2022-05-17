@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 class ForgotPassword extends Component {
     render() {
@@ -27,16 +28,20 @@ class ForgotPassword extends Component {
                                                             id="exampleInputEmail" aria-describedby="emailHelp"
                                                             placeholder="Enter Email Address..." />
                                                     </div>
-                                                    <a href="login.html" className="btn btn-primary btn-user btn-block">
+                                                    <Link className="btn btn-primary btn-user btn-block" to={"/sign-in"}>
                                                         Reset Password
-                                                    </a>
+                                                    </Link>
                                                 </form>
                                                 <hr />
                                                 <div className="text-center">
-                                                    <a className="small" href="/sign-up">Create an Account!</a>
+                                                    <Link className="small" to={"/sign-up"}>
+                                                        Create an Account!
+                                                    </Link>
                                                 </div>
                                                 <div className="text-center">
-                                                    <a className="small" href="/sign-in">Already have an account? Login!</a>
+                                                    <Link className="small" to={"/sign-in"}>
+                                                        Already have an account? Login!
+                                                    </Link>
                                                 </div>
                                             </div>
                                         </div>

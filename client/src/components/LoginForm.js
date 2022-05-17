@@ -17,12 +17,13 @@ class LoginForm extends Component {
         this.setState({ isRememberMe: e.target.value })
     }
 
+    
     onSubmit = (e) => {
         e.preventDefault()
-        const userObject = {
-            email: this.state.email,
-            password: this.state.password
-        };
+        // const userObject = {
+        //     email: this.state.email,
+        //     password: this.state.password
+        // };
         //   axios.post("/api/users/save", userObject)
         //       .then((res) => {
         //           console.log(res.data)
@@ -30,7 +31,7 @@ class LoginForm extends Component {
         //           console.log(error)
         //       });
         //this.setState({ name: '', email: '' ,isRememberMe:false})
-        this.props.handleLogin(true)
+        this.props.handleLogin()
     }
     render() {
         return (

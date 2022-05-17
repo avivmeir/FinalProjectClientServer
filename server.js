@@ -3,16 +3,15 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const path = require('path');
+require('dotenv').config()
 
 const app = express();
 const PORT = process.env.PORT || 8080; // Step 1
 
 const routes = require('./routes/api');
 
-const mongoURI = 'mongodb+srv://user:webshop123@database.3qzpr.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
-
 // Step 2
-mongoose.connect(process.env.MONGODB_URI || mongoURI || 'mongodb://localhost/mern_proj', {
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/mern_proj', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
