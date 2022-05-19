@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate, useRoutes } from 'react-router-dom'
 import CreateUser from './components/CreateUser'
 import LoginForm from './components/LoginForm'
 import ForgotPassword from './components/ForgotPassword'
@@ -9,10 +9,14 @@ import Dashboard from './components/Dashboard';
 import Footer from './components/Footer';
 import HeaderSign from './components/HeaderSign';
 import RouteParam from './components/RouteParam'
+import NotFound404 from './components/NotFound404';
+import BuyPc from './components/BuyPc';
+import BuyPhone from './components/BuyPhone';
+
 class App extends Component {
   constructor(props) {
     super(props)
-    this.state =  {
+    this.state = {
       logged: JSON.parse(window.localStorage.getItem('user')) || false
     }
   }
@@ -32,12 +36,12 @@ class App extends Component {
   }
   handleLogin = (isRemember) => {
     this.setState({ logged: true })
-    if (isRemember){
-      window.localStorage.setItem('user',isRemember);
+    if (isRemember) {
+      window.localStorage.setItem('user', isRemember);
     }
   }
-  handleLogout = ()=>{
-    this.setState({logged:false})
+  handleLogout = () => {
+    this.setState({ logged: false })
     localStorage.clear();
   }
 
@@ -65,21 +69,27 @@ class App extends Component {
             />
             <Route
               path="/sign-up"
-              element={this.state.logged === false ? 
-              <CreateUser handleLogin={this.handleLogin}/>
-               : 
-              <Navigate to="/dashboard" />}
+              element={this.state.logged === false ?
+                <CreateUser handleLogin={this.handleLogin} />
+                :
+                <Navigate to="/dashboard" />}
             />
-            
+
             <Route
               path="/forgot-password"
               element={this.state.logged === false ? <ForgotPassword /> : <Navigate to="/dashboard" />}
             />
             <Route
-              path="/dashboard"
-              element={this.state.logged === true ?  <Dashboard handleLogout={this.handleLogout}/> : <Navigate to="/sign-in" />}
-            />
-            <Route path = "/param/*" element = {<RouteParam />}></Route>
+              path="dashboard"
+              element={this.state.logged === true ? <Dashboard handleLogout={this.handleLogout} /> : <Navigate to="/sign-in" />}
+            >
+              <Route  path="pc" element={BuyPc}/>
+              <Route  path="phone" element={BuyPhone}/>
+
+            </Route>
+
+            <Route path="/param/*" element={<RouteParam />}></Route>
+            <Route path="*" exact={true} element={<NotFound404 />} />
           </Routes>
           {
             this.state.logged === false ?
