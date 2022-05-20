@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import 'reactjs-popup/dist/index.css';
 import PopupMessage from './PopupMessage';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 
 class CreateUser extends Component {
@@ -60,7 +61,6 @@ class CreateUser extends Component {
         }
 
     }
-
     componentDidUpdate() {
         if (!this.state.validation.tryValidate)
             this.setState({
@@ -69,7 +69,9 @@ class CreateUser extends Component {
                     tryValidate: true
                 }
             })
-
+    }
+    onChangeCAPTCHA= (value)=>{
+        //send to server for verifying
     }
     render() {
         return (
@@ -111,8 +113,13 @@ class CreateUser extends Component {
                                                         value={this.state.repeatPassowrd} onChange={this.onChangeRepeatPassword} />
                                                 </div>
                                             </div>
+                                            <div className="form-group d-flex justify-content-center">
+                                                <ReCAPTCHA
+                                                    sitekey="6LeJ9wUgAAAAAF7KLJpNWcJChvFvNvz27yZUlpS-"
+                                                    onChange={this.onChangeCAPTCHA}
+                                                />
+                                            </div>
                                             <input type="submit" value="Register Account" className="btn btn-primary btn-user btn-block" />
-
                                         </form>
                                         <hr />
                                         <div className="text-center">

@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 class ForgotPassword extends Component {
+    onChangeCAPTCHA= (value)=>{
+        //send to server for verifying
+    }
     render() {
         return (
             <div classNameName="wrapper">
@@ -27,6 +31,12 @@ class ForgotPassword extends Component {
                                                         <input type="email" className="form-control form-control-user"
                                                             id="exampleInputEmail" aria-describedby="emailHelp"
                                                             placeholder="Enter Email Address..." />
+                                                    </div>
+                                                    <div className="form-group d-flex justify-content-center">
+                                                        <ReCAPTCHA
+                                                            sitekey="6LeJ9wUgAAAAAF7KLJpNWcJChvFvNvz27yZUlpS-"
+                                                            onChange={this.onChangeCAPTCHA}
+                                                        />
                                                     </div>
                                                     <Link className="btn btn-primary btn-user btn-block" to={"/sign-in"}>
                                                         Reset Password

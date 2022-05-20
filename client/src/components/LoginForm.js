@@ -37,6 +37,7 @@ class LoginForm extends Component {
     }
     onChangeCAPTCHA = (value) => {
         console.log(`CAPTCHA = ${value}`)
+        // send value token to server for verigying
     }
     render() {
         return (
