@@ -35,7 +35,7 @@ class LoginForm extends Component {
         console.log(`login remember ${this.state.isRememberMe}`)
         this.props.handleLogin(this.state.isRememberMe)
     }
-    onChangeCAPTCHA = (value)=>{
+    onChangeCAPTCHA = (value) => {
         console.log(`CAPTCHA = ${value}`)
     }
     render() {
@@ -66,20 +66,22 @@ class LoginForm extends Component {
                                                             id="exampleInputPassword" placeholder="Password" />
                                                     </div>
                                                     <div className="form-group">
-                                                        <div className="custom-control custom-checkbox small">
+                                                        <div className="custom-control custom-checkbox small text-left ">
                                                             <input type="checkbox" className="custom-control-input" id="customCheck"
                                                                 value={this.state.isRememberMe} onChange={this.onChangeRememberMe} />
                                                             <label className="custom-control-label" htmlFor="customCheck">
                                                                 Remember Me</label>
                                                         </div>
                                                     </div>
-
+                                                    <div className="form-group d-flex justify-content-center">
                                                         <ReCAPTCHA
                                                             sitekey="6LeJ9wUgAAAAAF7KLJpNWcJChvFvNvz27yZUlpS-"
                                                             onChange={this.onChangeCAPTCHA}
                                                         />
-
+                                                    </div>
+                                                    <div className="form-group">
                                                         <input type="submit" value="Login" className="btn btn-primary btn-user btn-block" />
+                                                    </div>
                                                 </form>
                                                 <hr />
                                                 <div className="text-center">
