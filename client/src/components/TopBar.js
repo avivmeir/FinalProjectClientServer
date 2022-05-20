@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { ReactComponent as UserSvg } from '../app_photos/user-icon.svg';
+import { ReactComponent as ProfileSvg } from '../app_photos/profile-icon.svg';
+import { ReactComponent as AboutSvg } from '../app_photos/about-icon.svg';
+import { ReactComponent as LogoutSvg } from '../app_photos/logout-icon.svg';
+
+import { Link } from 'react-router-dom';
 
 class TopBar extends Component {
     onLogout = ()=>{
@@ -20,13 +25,13 @@ class TopBar extends Component {
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
                                     <Dropdown.Item href="#">
-                                        Profile
+                                       <ProfileSvg width ="12" height="12"/>&nbsp; Profile
                                     </Dropdown.Item>
-                                    <Dropdown.Item href="#">
-                                        About
-                                    </Dropdown.Item>
+                                    <Dropdown.Item as={Link} to="/dashboard/about">
+                                       <AboutSvg width ="12" height="12"  />&nbsp; About
+                                    </Dropdown.Item >
                                     <Dropdown.Item onClick={this.onLogout}>
-                                        Logout
+                                      <LogoutSvg width ="12" height="12" />&nbsp; Logout
                                     </Dropdown.Item>
                                 </Dropdown.Menu>
                             </Dropdown>

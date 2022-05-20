@@ -12,6 +12,7 @@ import RouteParam from './components/RouteParam'
 import NotFound404 from './components/NotFound404';
 import BuyPc from './components/BuyPc';
 import BuyPhone from './components/BuyPhone';
+import About from './components/About';
 
 class App extends Component {
   constructor(props) {
@@ -85,7 +86,7 @@ class App extends Component {
             >
               <Route  path="pc" element={BuyPc}/>
               <Route  path="phone" element={BuyPhone}/>
-
+              <Route  path="about" element={About}/>
             </Route>
 
             <Route path="/param/*" element={<RouteParam />}></Route>
