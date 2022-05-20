@@ -7,6 +7,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import BuyPc from './BuyPc';
 import BuyPhone from './BuyPhone';
 import About from './About';
+import NotFound404 from './NotFound404';
+
 class Dashboard extends Component {
     render() {
         return (
@@ -21,6 +23,8 @@ class Dashboard extends Component {
                                 <Route path="/pc" element={<BuyPc />} />
                                 <Route path="/phone" element={<BuyPhone />} />
                                 <Route path="/about" element={<About />} />
+                                <Route path="/*" exact={true} element={<NotFound404 />} />
+
                             </Routes>
                         </div>
                     </div>

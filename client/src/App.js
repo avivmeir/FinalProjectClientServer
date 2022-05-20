@@ -81,16 +81,19 @@ class App extends Component {
               element={this.state.logged === false ? <ForgotPassword /> : <Navigate to="/dashboard" />}
             />
             <Route
-              path="dashboard"
+              path="dashboard/*"
               element={this.state.logged === true ? <Dashboard handleLogout={this.handleLogout} /> : <Navigate to="/sign-in" />}
             >
-              <Route  path="pc" element={BuyPc}/>
-              <Route  path="phone" element={BuyPhone}/>
-              <Route  path="about" element={About}/>
-            </Route>
 
+            </Route>
             <Route path="/param/*" element={<RouteParam />}></Route>
-            <Route path="*" exact={true} element={<NotFound404 />} />
+            {
+              this.state.logged ?
+                <Route path="*" exact={true} element={<Dashboard />} />
+                :
+                <Route path="*" exact={true} element={<NotFound404 />} />
+            }
+
           </Routes>
           {
             this.state.logged === false ?

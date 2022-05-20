@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 class LoginForm extends Component {
     state = {
@@ -17,7 +18,7 @@ class LoginForm extends Component {
         this.setState({ isRememberMe: e.target.checked })
     }
 
-    
+
     onSubmit = (e) => {
         e.preventDefault()
         // const userObject = {
@@ -33,6 +34,9 @@ class LoginForm extends Component {
         //this.setState({ name: '', email: '' ,isRememberMe:false})
         console.log(`login remember ${this.state.isRememberMe}`)
         this.props.handleLogin(this.state.isRememberMe)
+    }
+    onChangeCAPTCHA = (value)=>{
+        console.log(`CAPTCHA = ${value}`)
     }
     render() {
         return (
@@ -69,8 +73,13 @@ class LoginForm extends Component {
                                                                 Remember Me</label>
                                                         </div>
                                                     </div>
-                                                    <input type="submit" value="Login" className="btn btn-primary btn-user btn-block" />
 
+                                                        <ReCAPTCHA
+                                                            sitekey="6LeJ9wUgAAAAAF7KLJpNWcJChvFvNvz27yZUlpS-"
+                                                            onChange={this.onChangeCAPTCHA}
+                                                        />
+
+                                                        <input type="submit" value="Login" className="btn btn-primary btn-user btn-block" />
                                                 </form>
                                                 <hr />
                                                 <div className="text-center">
