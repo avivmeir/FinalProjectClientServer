@@ -12,12 +12,12 @@ class HeaderSign extends Component {
                             id="navbarSupportedContent"
                         >
                             <ul className="navbar-nav ml-auto">
-                                <li className="nav-item active">
+                                <li className="nav-item ">
                                     <Link className="nav-link" to={'/sign-up'}>
                                         Create Account
                                     </Link>
                                 </li>
-                                <li className="nav-item">
+                                <li className="nav-item ">
                                     <Link className="nav-link" to={'/sign-in'}>
                                         Login
                                     </Link>

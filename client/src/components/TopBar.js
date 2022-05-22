@@ -24,7 +24,7 @@ class TopBar extends Component {
                                     <UserSvg width ="48" height="48" />
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
-                                    <Dropdown.Item href="#">
+                                    <Dropdown.Item as={Link} to="/dashboard/profile">
                                        <ProfileSvg width ="12" height="12"/>&nbsp; Profile
                                     </Dropdown.Item>
                                     <Dropdown.Item as={Link} to="/dashboard/about">
