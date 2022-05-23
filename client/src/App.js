@@ -18,7 +18,8 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      logged: JSON.parse(window.localStorage.getItem('user')) || false
+      logged: JSON.parse(window.localStorage.getItem('user')) || false,
+      email: window.localStorage.getItem('email') || ""
     }
   }
   setState(state) {
@@ -35,10 +36,11 @@ class App extends Component {
     }
     else return (<div />)
   }
-  handleLogin = (isRemember) => {
-    this.setState({ logged: true })
+  handleLogin = (isRemember,emailAdress) => {
+    this.setState({ logged: true,email: emailAdress })
     if (isRemember) {
       window.localStorage.setItem('user', isRemember);
+      window.localStorage.setItem('email',emailAdress );
     }
   }
   handleLogout = () => {
@@ -82,7 +84,7 @@ class App extends Component {
             />
             <Route
               path="dashboard/*"
-              element={this.state.logged === true ? <Dashboard handleLogout={this.handleLogout} /> : <Navigate to="/sign-in" />}
+              element={this.state.logged === true ? <Dashboard handleLogout={this.handleLogout} emailAdress={this.state.email}/> : <Navigate to="/sign-in" />}
             >
 
             </Route>

@@ -33,7 +33,7 @@ class LoginForm extends Component {
         //       });
         //this.setState({ name: '', email: '' ,isRememberMe:false})
         console.log(`login remember ${this.state.isRememberMe}`)
-        this.props.handleLogin(this.state.isRememberMe)
+        this.props.handleLogin(this.state.isRememberMe,this.state.email)
     }
     onChangeCAPTCHA = (value) => {
         console.log(`CAPTCHA = ${value}`)

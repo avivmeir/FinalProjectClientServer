@@ -24,7 +24,7 @@ class Dashboard extends Component {
                                 <Route path="/pc" element={<BuyPc />} />
                                 <Route path="/phone" element={<BuyPhone />} />
                                 <Route path="/about" element={<About />} />
-                                <Route path="/profile" element={<Profile />} />
+                                <Route path="/profile" element={<Profile emailAdress={this.props.emailAdress}/>} />
                                 <Route path="/*" exact={true} element={<NotFound404 />} />
                             </Routes>
                         </div>

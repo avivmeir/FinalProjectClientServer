@@ -5,12 +5,136 @@ import { ReactComponent as CorrectSvg } from '../app_photos/correct-icon.svg';
 class Profile extends Component {
     state = {
         editMode: false,
-
+        details: {
+            firstName: 'first',
+            lastName: 'last',
+            phone: '0524453933',
+            country: 'IL',
+            email: this.props.emailAdress,
+            city: 'ka',
+            street: 'aw',
+            zipCode: '11'
+        },
+        password: {
+            old: '', new: '', repeat: ''
+        },
         passwordValid: {
             match: true,
             withNumbers: false,
             withChars: false
         }
+    }
+    onChangeFirstName = (e) => {
+        this.setState({
+            details: {
+                firstName: e.target.value,
+                lastName: this.state.details.lastName,
+                phone: this.state.details.phone,
+                country: this.state.details.country,
+                email: this.state.details.email,
+                city: this.state.details.city,
+                street: this.state.details.street,
+                zipCode: this.state.details.zipCode
+            }
+        })
+    }
+    onChangeLastName = (e) => {
+        this.setState({
+            details: {
+                firstName: this.state.details.firstName,
+                lastName: e.target.value,
+                phone: this.state.details.phone,
+                country: this.state.details.country,
+                email: this.state.details.email,
+                city: this.state.details.city,
+                street: this.state.details.street,
+                zipCode: this.state.details.zipCode
+            }
+        })
+    }
+    onChangePhone = (e) => {
+        this.setState({
+            details: {
+                firstName: this.state.details.firstName,
+                lastName: this.state.details.lastName,
+                phone: e.target.value,
+                country: this.state.details.country,
+                email: this.state.details.email,
+                city: this.state.details.city,
+                street: this.state.details.street,
+                zipCode: this.state.details.zipCode
+            }
+        })
+    }
+    onChangeCountry = (e) => {
+        this.setState({
+            details: {
+                firstName: this.state.details.firstName,
+                lastName: this.state.details.lastName,
+                phone: this.state.details.phone,
+                country: e.target.value,
+                email: this.state.details.email,
+                city: this.state.details.city,
+                street: this.state.details.street,
+                zipCode: this.state.details.zipCode
+            }
+        })
+    }
+    onChangeEmail = (e) => {
+        this.setState({
+            details: {
+                firstName: this.state.details.firstName,
+                lastName: this.state.details.lastName,
+                phone: this.state.details.phone,
+                country: this.state.details.country,
+                email: e.target.value,
+                city: this.state.details.city,
+                street: this.state.details.street,
+                zipCode: this.state.details.zipCode
+            }
+        })
+    }
+    onChangeCity = (e) => {
+        this.setState({
+            details: {
+                firstName: this.state.details.firstName,
+                lastName: this.state.details.lastName,
+                phone: this.state.details.phone,
+                country: this.state.details.country,
+                email: this.state.details.email,
+                city: e.target.value,
+                street: this.state.details.street,
+                zipCode: this.state.details.zipCode
+            }
+        })
+    }
+    onChangeStreet = (e) => {
+        this.setState({
+            details: {
+                firstName: this.state.details.firstName,
+                lastName: this.state.details.lastName,
+                phone: this.state.details.phone,
+                country: this.state.details.country,
+                email: this.state.details.email,
+                city: this.state.details.city,
+                street: e.target.value,
+                zipCode: this.state.details.zipCode
+            }
+        })
+    }
+    onChangeZipCode = (e) => {
+        this.setState({
+            details: {
+                firstName: this.state.details.firstName,
+                lastName: this.state.details.lastName,
+                phone: this.state.details.phone,
+                country: this.state.details.country,
+                email: this.state.details.email,
+                city: this.state.details.city,
+                street: this.state.details.street,
+                zipCode: e.target.value
+            }
+        })
     }
     handleEditClick = () => {
         this.setState({ editMode: !this.state.editMode })
@@ -19,37 +143,91 @@ class Profile extends Component {
         e.preventDefault();
         console.log("submit clicked")
     }
-    updateDetails = () => {
-        console.log("update clicked")
-
+    updateDetails = (e) => {
+        e.preventDefault();
+        console.log("update details clicked")
+    }
+    updatePassword = (e) => {
+        e.preventDefault();
+        console.log("update password clicked")
+    }
+    getUserDetails = () => {
+        //get details by email
+        console.log("get user details")
     }
     render() {
+        this.getUserDetails()
         return (
             <div className="wrapper">
-                    <h4 >Profile details</h4>
-                <div class="row">
+                <div className="row">
                     <div className="col-md-6 border-right">
                         <div className="p-3 py-5">
-                            <div className="row mt-2">
-                                <div className="col-md-6"><label className="labels">First Name</label><input type="text" className="form-control" placeholder="first name" value="" /></div>
-                                <div className="col-md-6"><label className="labels">Last Name</label><input type="text" className="form-control" value="" placeholder="surname" /></div>
-                            </div>
-                            <div className="row mt-3">
-                                <div className="col-md-12"><label className="labels">Phone Number</label><input type="text" className="form-control" placeholder="enter phone number" value="" /></div>
-                                <div className="col-md-12"><label className="labels">Country</label><input type="text" className="form-control" placeholder="enter address line 1" value="" /></div>
-                                <div className="col-md-12"><label className="labels">Email</label><input type="text" className="form-control" placeholder="enter address line 2" value="" /></div>
-                                <div className="col-md-12"><label className="labels">City</label><input type="text" className="form-control" placeholder="enter address line 2" value="" /></div>
-                                <div className="col-md-12"><label className="labels">Street</label><input type="text" className="form-control" placeholder="enter address line 2" value="" /></div>
-                                <div className="col-md-12"><label className="labels">Zip Code</label><input type="text" className="form-control" placeholder="enter address line 2" value="" /></div>
-                            </div>
-                            <div className="mt-5 text-center"><button className="btn btn-primary profile-button" type="button">Save Profile</button></div>
+                            <span className="h4 text-black">Profile details</span>
+                            <span className="ml-2">
+                                <button className="btn btn-secondary btn-sm d-flex " onClick={this.handleEditClick}>
+                                    Edit ✏️
+                                </button>
+                            </span>
+                            <form onSubmit={this.updateDetails}>
+
+                                <div className="row mt-4">
+                                    <div className="col-md-6">
+                                        <label className="d-flex">First Name</label>
+                                        <input type="text" className="form-control" disabled={!this.state.editMode} value={this.state.details.firstName} onChange={this.onChangeFirstName} />
+                                    </div>
+                                    <div className="col-md-6">
+                                        <label className="d-flex">Last Name</label>
+                                        <input type="text" className="form-control" disabled={!this.state.editMode} value={this.state.details.lastName} onChange={this.onChangeLastName} />
+                                    </div>
+                                </div>
+                                <div className="row mt-3">
+                                    <div className="col-md-12"><label className="d-flex">Phone Number</label>
+                                        <input type="text" className="form-control" disabled={!this.state.editMode} value={this.state.details.phone} onChange={this.onChangePhone} />
+                                    </div>
+                                    <div className="col-md-12"><label className="d-flex">Country</label>
+                                        <input type="text" className="form-control" disabled={!this.state.editMode} value={this.state.details.country} onChange={this.onChangeCountry} />
+                                    </div>
+                                    <div className="col-md-12"><label className="d-flex">Email</label>
+                                        <input type="text" className="form-control" disabled={!this.state.editMode} value={this.state.details.email} onChange={this.onChangeEmail} />
+                                    </div>
+                                    <div className="col-md-12"><label className="d-flex">City</label>
+                                        <input type="text" className="form-control" disabled={!this.state.editMode} value={this.state.details.city} onChange={this.onChangeCity} />
+                                    </div>
+                                    <div className="col-md-12"><label className="d-flex">Street</label>
+                                        <input type="text" className="form-control" disabled={!this.state.editMode} value={this.state.details.street} onChange={this.onChangeStreet} />
+                                    </div>
+                                    <div className="col-md-12"><label className="d-flex">Zip Code</label>
+                                        <input type="text" className="form-control" disabled={!this.state.editMode} value={this.state.details.zipCode} onChange={this.onChangeZipCode} />
+                                    </div>
+                                </div>
+                                <div className="mt-3 text-center">
+                                    {
+                                        this.state.editMode ?
+                                            <input className="btn btn-primary profile-button" type="submit" value="Update" />
+                                            :
+                                            null
+                                    }
+                                </div>
+                            </form>
+
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="p-3 py-5">
-                            <div class="d-flex justify-content-between align-items-center experience"><span>Edit Experience</span><span class="border px-3 p-1 add-experience"><i class="fa fa-plus"></i>&nbsp;Experience</span></div><br />
-                            <div class="col-md-12"><label class="labels">Experience in Designing</label><input type="text" class="form-control" placeholder="experience" value="" /></div> <br />
-                            <div class="col-md-12"><label class="labels">Additional Details</label><input type="text" class="form-control" placeholder="additional details" value="" /></div>
+                    <div className="col-md-4">
+                        <div className="p-3 py-5">
+                            <h4 className="text-black">Change Password</h4>
+                            <div className="col-md-12 mt-4">
+                                <label className="labels">Old Password</label>
+                                <input type="password" className="form-control" value={this.state.password.old} onChange={(e) => this.setState({ password: { old: e.target.value } })} />
+                            </div> <br />
+                            <div className="col-md-12">
+                                <label className="labels" >New Password</label>
+                                <input type="password" className="form-control" value={this.state.password.new} onChange={(e) => this.setState({ password: { new: e.target.value } })} />
+                            </div> <br />
+                            <div className="col-md-12">
+                                <label className="labels">Reapeat Password</label>
+                                <input type="password" className="form-control" value={this.state.password.repeat} onChange={(e) => this.setState({ password: { repeat: e.target.value } })} />
+                            </div> <br />
+                            <button className="btn btn-secondary profile-button" type="button" onClick={this.updatePassword}>Change Password</button>
                         </div>
                     </div>
                 </div>
