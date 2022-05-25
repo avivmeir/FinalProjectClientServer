@@ -1,13 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import React, { Component } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-  useRoutes,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import CreateUser from "./components/CreateUser";
 import LoginForm from "./components/LoginForm";
 import ForgotPassword from "./components/ForgotPassword";
@@ -16,9 +10,7 @@ import Footer from "./components/Footer";
 import HeaderSign from "./components/HeaderSign";
 import RouteParam from "./components/RouteParam";
 import NotFound404 from "./components/NotFound404";
-import BuyPc from "./components/BuyPc";
-import BuyPhone from "./components/BuyPhone";
-import About from "./components/About";
+
 
 class App extends Component {
   constructor(props) {
@@ -49,9 +41,6 @@ class App extends Component {
   handleLogout = () => {
     this.setState({ logged: false });
     localStorage.clear();
-  };
-  handleSign = () => {
-    <Navigate to="/sign-in" />;
   };
   render() {
     return (
@@ -84,7 +73,7 @@ class App extends Component {
               path="/sign-up"
               element={
                 this.state.logged === false ? (
-                  <CreateUser handleSign={this.handleSign} />
+                  <CreateUser  />
                 ) : (
                   <Navigate to="/dashboard" />
                 )

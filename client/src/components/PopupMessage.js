@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
+import { Navigate } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 
 class PopupMessage extends Component {
 
+    state = {
+        navigate: false
+    }
 
     render() {
         return (
@@ -27,7 +31,7 @@ class PopupMessage extends Component {
                                 <div className="modal-footer">
                                     {
                                         this.props.withOk ?
-                                            <button type="button" onClick={() => { this.props.onOk() }} className="btn btn-primary">{this.props.okBtnText}</button>
+                                            <button type="button" onClick={() => { this.setState({ navigate: true }) }} className="btn btn-primary">{this.props.okBtnText}</button>
                                             :
                                             null
                                     }
@@ -37,7 +41,10 @@ class PopupMessage extends Component {
                                             :
                                             null
                                     }
-
+                                    {
+                                        this.state.navigate ? 
+                                        <Navigate to ={this.props.navigateTo}/> : null
+                                    }
                                 </div>
                             </div>
                         </div>

@@ -3,7 +3,6 @@ import axios from "axios";
 import { Link, Navigate } from "react-router-dom";
 import "reactjs-popup/dist/index.css";
 import PopupMessage from "./PopupMessage";
-import ReCAPTCHA from "react-google-recaptcha";
 
 class CreateUser extends Component {
   state = {
@@ -14,7 +13,8 @@ class CreateUser extends Component {
     repeatPassowrd: "",
     validation: {
       successfulLogin: false,
-      tryValidate: false,
+      showErrors: false,
+      validateChanger: false
     },
   };
   onChangeFirstName = (e) => {
@@ -42,14 +42,10 @@ class CreateUser extends Component {
       repeatPassword: this.state.repeatPassowrd,
     };
 
-    if (
-      this.state.password === this.state.repeatPassowrd &&
-      this.state.password.length > 6
-    ) {
+    if (this.state.password === this.state.repeatPassowrd && this.state.password.length > 6) {
       axios
         .post("/api/sign-up", userObject)
         .then((res) => {
-          this.props.handleSign();
           console.log(res.data);
         })
         .catch((error) => {
@@ -59,23 +55,27 @@ class CreateUser extends Component {
         validation: { successfulLogin: true, tryValidate: false },
       });
     } else {
+
       this.setState({
         validation: {
           successfulLogin: false,
-          tryValidate: !this.state.validation.tryValidate,
-        },
+          showErrors: true,
+          validateChanger: !this.state.validation.validateChanger
+        }
       });
+      console.log(JSON.stringify(this.state.validation))
     }
   };
-  //   componentDidUpdate() {
-  //     if (!this.state.validation.tryValidate)
-  //       this.setState({
-  //         validation: {
-  //           successfulLogin: false,
-  //           tryValidate: true,
-  //         },
-  //       });
-  //   }
+  //this is for rerendering the errors popup if needed
+  componentDidUpdate() {
+    if (this.state.validation.showErrors && !this.state.validation.validateChanger)
+      this.setState({
+        validation: {
+          ...this.state.validation,
+          validateChanger: !this.state.validation.validateChanger,
+        }
+      })
+  }
   onChangeCAPTCHA = (value) => {
     //send to server for verifying
   };
@@ -155,10 +155,10 @@ class CreateUser extends Component {
                         </div>
                       </div>
                       <div className="form-group d-flex justify-content-center">
-                        <ReCAPTCHA
+                        {/* <ReCAPTCHA
                           sitekey="6LeJ9wUgAAAAAF7KLJpNWcJChvFvNvz27yZUlpS-"
                           onChange={this.onChangeCAPTCHA}
-                        />
+                        /> */}
                       </div>
                       <input
                         type="submit"
@@ -183,9 +183,10 @@ class CreateUser extends Component {
             </div>
           </div>
         </div>
-        {this.state.validation.successfulLogin ? (
+        {this.state.validation.successfulLogin ?
           <PopupMessage
             title={"Registration Succeed"}
+            p={this.state.validation.validateChanger}
             body={
               <div>
                 <div>Hi {this.state.firstName}, Welcome to our shop !!</div>
@@ -197,14 +198,16 @@ class CreateUser extends Component {
               </div>
             }
             withOk={true}
+            navigateTo="/sign-in"
             okBtnText={"Continue to the shop"}
-            onOk={this.props.handleSign}
             withClose={false}
           />
-        ) : null}
-        {this.state.validation.tryValidate ? (
+          :
+          null
+        }
+        {this.state.validation.validateChanger ?
           <PopupMessage
-            title={"Error"}
+            title="Error"
             body={
               <div>
                 <div>Password do not match requirements: </div>
@@ -215,7 +218,9 @@ class CreateUser extends Component {
             withOk={false}
             withClose={false}
           />
-        ) : null}
+          :
+          null
+        }
       </div>
     );
   }
