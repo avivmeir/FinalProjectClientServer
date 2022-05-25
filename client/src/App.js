@@ -1,53 +1,58 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
-import React, { Component } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useRoutes } from 'react-router-dom'
-import CreateUser from './components/CreateUser'
-import LoginForm from './components/LoginForm'
-import ForgotPassword from './components/ForgotPassword'
-import Dashboard from './components/Dashboard';
-import Footer from './components/Footer';
-import HeaderSign from './components/HeaderSign';
-import RouteParam from './components/RouteParam'
-import NotFound404 from './components/NotFound404';
-import BuyPc from './components/BuyPc';
-import BuyPhone from './components/BuyPhone';
-import About from './components/About';
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./App.css";
+import React, { Component } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useRoutes,
+} from "react-router-dom";
+import CreateUser from "./components/CreateUser";
+import LoginForm from "./components/LoginForm";
+import ForgotPassword from "./components/ForgotPassword";
+import Dashboard from "./components/Dashboard";
+import Footer from "./components/Footer";
+import HeaderSign from "./components/HeaderSign";
+import RouteParam from "./components/RouteParam";
+import NotFound404 from "./components/NotFound404";
+import BuyPc from "./components/BuyPc";
+import BuyPhone from "./components/BuyPhone";
+import About from "./components/About";
 
 class App extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
-      logged: JSON.parse(window.localStorage.getItem('user')) || false,
-      email: window.localStorage.getItem('email') || ""
-    }
+      logged: JSON.parse(window.localStorage.getItem("user")) || false,
+      email: window.localStorage.getItem("email") || "",
+      firstName: window.localStorage.getItem("firstName") || "",
+    };
   }
   setState(state) {
-    window.localStorage.setItem('state', JSON.stringify(state));
+    window.localStorage.setItem("state", JSON.stringify(state));
     super.setState(state);
   }
 
-
   getNav = () => {
     if (this.state.logged === false) {
-      return (
-        <HeaderSign />
-      )
-    }
-    else return (<div />)
-  }
-  handleLogin = (isRemember,emailAdress) => {
-    this.setState({ logged: true,email: emailAdress })
+      return <HeaderSign />;
+    } else return <div />;
+  };
+  handleLogin = (isRemember, emailAdress, firstName) => {
+    this.setState({ logged: true, email: emailAdress, firstName: firstName });
     if (isRemember) {
-      window.localStorage.setItem('user', isRemember);
-      window.localStorage.setItem('email',emailAdress );
+      window.localStorage.setItem("user", isRemember);
+      window.localStorage.setItem("email", emailAdress);
     }
-  }
+  };
   handleLogout = () => {
-    this.setState({ logged: false })
+    this.setState({ logged: false });
     localStorage.clear();
-  }
-
+  };
+  handleSign = () => {
+    <Navigate to="/sign-in" />;
+  };
   render() {
     return (
       <Router>
@@ -55,57 +60,72 @@ class App extends Component {
           {this.getNav()}
           <Routes>
             <Route
-              exact path="/"
-              element={this.state.logged === true ?
-                <Navigate to="/dashboard" />
-                :
-                <Navigate to="/sign-in" />
+              exact
+              path="/"
+              element={
+                this.state.logged === true ? (
+                  <Navigate to="/dashboard" />
+                ) : (
+                  <Navigate to="/sign-in" />
+                )
               }
             />
             <Route
               path="/sign-in"
-              element={this.state.logged === false ?
-                <LoginForm handleLogin={this.handleLogin} />
-                :
-                <Navigate to="/dashboard" />
+              element={
+                this.state.logged === false ? (
+                  <LoginForm handleLogin={this.handleLogin} />
+                ) : (
+                  <Navigate to="/dashboard" />
+                )
               }
             />
             <Route
               path="/sign-up"
-              element={this.state.logged === false ?
-                <CreateUser handleLogin={this.handleLogin} />
-                :
-                <Navigate to="/dashboard" />}
+              element={
+                this.state.logged === false ? (
+                  <CreateUser handleSign={this.handleSign} />
+                ) : (
+                  <Navigate to="/dashboard" />
+                )
+              }
             />
 
             <Route
               path="/forgot-password"
-              element={this.state.logged === false ? <ForgotPassword /> : <Navigate to="/dashboard" />}
+              element={
+                this.state.logged === false ? (
+                  <ForgotPassword />
+                ) : (
+                  <Navigate to="/dashboard" />
+                )
+              }
             />
             <Route
               path="dashboard/*"
-              element={this.state.logged === true ? <Dashboard handleLogout={this.handleLogout} emailAdress={this.state.email}/> : <Navigate to="/sign-in" />}
-            >
-
-            </Route>
+              element={
+                this.state.logged === true ? (
+                  <Dashboard
+                    handleLogout={this.handleLogout}
+                    emailAdress={this.state.email}
+                    firstName={this.state.firstName}
+                  />
+                ) : (
+                  <Navigate to="/sign-in" />
+                )
+              }
+            ></Route>
             <Route path="/param/*" element={<RouteParam />}></Route>
-            {
-              this.state.logged ?
-                <Route path="*" exact={true} element={<Dashboard />} />
-                :
-                <Route path="*" exact={true} element={<NotFound404 />} />
-            }
-
+            {this.state.logged ? (
+              <Route path="*" exact={true} element={<Dashboard />} />
+            ) : (
+              <Route path="*" exact={true} element={<NotFound404 />} />
+            )}
           </Routes>
-          {
-            this.state.logged === false ?
-              <Footer />
-              :
-              <div />
-          }
+          {this.state.logged === false ? <Footer /> : <div />}
         </div>
       </Router>
     );
   }
 }
-export default App
+export default App;

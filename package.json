@@ -24,6 +24,14 @@
   "main": "index.js",
   "author": "",
   "license": "ISC",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/avivmeir/FinalProjectClientServer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/avivmeir/FinalProjectClientServer/issues"
+  },
+  "homepage": "https://github.com/avivmeir/FinalProjectClientServer#readme",
   "description": ""
-  
 }
