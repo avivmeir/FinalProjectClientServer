@@ -104,10 +104,6 @@ class Profile extends Component {
     handleEditClick = () => {
         this.setState({ editMode: !this.state.editMode })
     }
-    onSubmit = (e) => {
-        e.preventDefault();
-        console.log("submit clicked")
-    }
     updateDetails = (e) => {
         e.preventDefault();
         console.log("update details clicked")

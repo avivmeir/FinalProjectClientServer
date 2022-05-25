@@ -29,9 +29,14 @@ router.post('/users/save',(req, res) => {
         });
     });
 })
-
-
-
-
+router.post('/users/a',(req, res) => {
+   User.find({email:req.email})
+   .then(model=>{
+       res.json(model)
+   })
+   .catch(error =>{
+       res.json(error)
+   })
+})
 
 module.exports = router;

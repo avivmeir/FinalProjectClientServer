@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
-
+import axios from 'axios';
 class LoginForm extends Component {
     state = {
         email: '',
@@ -21,16 +21,16 @@ class LoginForm extends Component {
 
     onSubmit = (e) => {
         e.preventDefault()
-        // const userObject = {
-        //     email: this.state.email,
-        //     password: this.state.password
-        // };
-        //   axios.post("/api/users/save", userObject)
-        //       .then((res) => {
-        //           console.log(res.data)
-        //       }).catch((error) => {
-        //           console.log(error)
-        //       });
+        const userObject = {
+            email: this.state.email,
+            password: this.state.password
+        };
+          axios.post("/api/users/a", userObject)
+              .then((res) => {
+                  console.log(res.data)
+              }).catch((error) => {
+                  console.log(error)
+              });
         //this.setState({ name: '', email: '' ,isRememberMe:false})
         console.log(`login remember ${this.state.isRememberMe}`)
         this.props.handleLogin(this.state.isRememberMe,this.state.email)
@@ -40,6 +40,7 @@ class LoginForm extends Component {
         // send value token to server for verigying
     }
     render() {
+        JSON.stringify(this.state)
         return (
             <div className="wrapper">
                 <div className="container">
@@ -75,10 +76,10 @@ class LoginForm extends Component {
                                                         </div>
                                                     </div>
                                                     <div className="form-group d-flex justify-content-center">
-                                                        <ReCAPTCHA
+                                                        {/* <ReCAPTCHA
                                                             sitekey="6LeJ9wUgAAAAAF7KLJpNWcJChvFvNvz27yZUlpS-"
                                                             onChange={this.onChangeCAPTCHA}
-                                                        />
+                                                        /> */}
                                                     </div>
                                                     <div className="form-group">
                                                         <input type="submit" value="Login" className="btn btn-primary btn-user btn-block" />
