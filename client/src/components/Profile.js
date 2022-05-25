@@ -1,7 +1,18 @@
 import React, { Component } from 'react';
 import { ReactComponent as ErrorSvg } from '../app_photos/error-icon.svg';
 import { ReactComponent as CorrectSvg } from '../app_photos/correct-icon.svg';
-
+function ShowPasswordMsg(props) {
+    return (
+        props.match ?
+            <div className="text-success">
+                <CorrectSvg height="24" width="24" /> {props.text}
+            </div>
+            :
+            <div className="text-danger ">
+                <ErrorSvg height="18" width="18" /> {props.text}
+            </div>
+    )
+}
 class Profile extends Component {
     state = {
         editMode: false,
@@ -19,122 +30,76 @@ class Profile extends Component {
             old: '', new: '', repeat: ''
         },
         passwordValid: {
+            showErrors: true,
             match: true,
             withNumbers: false,
             withChars: false
         }
     }
     onChangeFirstName = (e) => {
-        this.setState({
+        this.setState(prevState => ({
             details: {
-                firstName: e.target.value,
-                lastName: this.state.details.lastName,
-                phone: this.state.details.phone,
-                country: this.state.details.country,
-                email: this.state.details.email,
-                city: this.state.details.city,
-                street: this.state.details.street,
-                zipCode: this.state.details.zipCode
+                ...prevState.details,
+                firstName: e.target.value
             }
-        })
+        }))
     }
     onChangeLastName = (e) => {
-        this.setState({
+        this.setState(prevState => ({
             details: {
-                firstName: this.state.details.firstName,
+                ...prevState.details,
                 lastName: e.target.value,
-                phone: this.state.details.phone,
-                country: this.state.details.country,
-                email: this.state.details.email,
-                city: this.state.details.city,
-                street: this.state.details.street,
-                zipCode: this.state.details.zipCode
             }
-        })
+        }))
     }
     onChangePhone = (e) => {
-        this.setState({
+        this.setState(prevState => ({
             details: {
-                firstName: this.state.details.firstName,
-                lastName: this.state.details.lastName,
+                ...prevState.details,
                 phone: e.target.value,
-                country: this.state.details.country,
-                email: this.state.details.email,
-                city: this.state.details.city,
-                street: this.state.details.street,
-                zipCode: this.state.details.zipCode
             }
-        })
+        }))
+
     }
     onChangeCountry = (e) => {
-        this.setState({
+        this.setState(prevState => ({
             details: {
-                firstName: this.state.details.firstName,
-                lastName: this.state.details.lastName,
-                phone: this.state.details.phone,
+                ...prevState.details,
                 country: e.target.value,
-                email: this.state.details.email,
-                city: this.state.details.city,
-                street: this.state.details.street,
-                zipCode: this.state.details.zipCode
             }
-        })
+        }))
     }
     onChangeEmail = (e) => {
-        this.setState({
+        this.setState(prevState => ({
             details: {
-                firstName: this.state.details.firstName,
-                lastName: this.state.details.lastName,
-                phone: this.state.details.phone,
-                country: this.state.details.country,
+                ...prevState.details,
                 email: e.target.value,
-                city: this.state.details.city,
-                street: this.state.details.street,
-                zipCode: this.state.details.zipCode
             }
-        })
+        }))
     }
     onChangeCity = (e) => {
-        this.setState({
+        this.setState(prevState => ({
             details: {
-                firstName: this.state.details.firstName,
-                lastName: this.state.details.lastName,
-                phone: this.state.details.phone,
-                country: this.state.details.country,
-                email: this.state.details.email,
+                ...prevState.details,
                 city: e.target.value,
-                street: this.state.details.street,
-                zipCode: this.state.details.zipCode
             }
-        })
+        }))
     }
     onChangeStreet = (e) => {
-        this.setState({
+        this.setState(prevState => ({
             details: {
-                firstName: this.state.details.firstName,
-                lastName: this.state.details.lastName,
-                phone: this.state.details.phone,
-                country: this.state.details.country,
-                email: this.state.details.email,
-                city: this.state.details.city,
+                ...prevState.details,
                 street: e.target.value,
-                zipCode: this.state.details.zipCode
             }
-        })
+        }))
     }
     onChangeZipCode = (e) => {
-        this.setState({
+        this.setState(prevState => ({
             details: {
-                firstName: this.state.details.firstName,
-                lastName: this.state.details.lastName,
-                phone: this.state.details.phone,
-                country: this.state.details.country,
-                email: this.state.details.email,
-                city: this.state.details.city,
-                street: this.state.details.street,
+                ...prevState.details,
                 zipCode: e.target.value
             }
-        })
+        }))
     }
     handleEditClick = () => {
         this.setState({ editMode: !this.state.editMode })
@@ -160,7 +125,7 @@ class Profile extends Component {
         return (
             <div className="wrapper">
                 <div className="row">
-                    <div className="col-md-6 border-right">
+                    <div className="col-md-5 border-right">
                         <div className="p-3 py-5">
                             <span className="h4 text-black">Profile details</span>
                             <span className="ml-2">
@@ -212,142 +177,38 @@ class Profile extends Component {
 
                         </div>
                     </div>
-                    <div className="col-md-4">
-                        <div className="p-3 py-5">
-                            <h4 className="text-black">Change Password</h4>
-                            <div className="col-md-12 mt-4">
-                                <label className="labels">Old Password</label>
-                                <input type="password" className="form-control" value={this.state.password.old} onChange={(e) => this.setState({ password: { old: e.target.value } })} />
-                            </div> <br />
-                            <div className="col-md-12">
-                                <label className="labels" >New Password</label>
-                                <input type="password" className="form-control" value={this.state.password.new} onChange={(e) => this.setState({ password: { new: e.target.value } })} />
-                            </div> <br />
-                            <div className="col-md-12">
-                                <label className="labels">Reapeat Password</label>
-                                <input type="password" className="form-control" value={this.state.password.repeat} onChange={(e) => this.setState({ password: { repeat: e.target.value } })} />
-                            </div> <br />
-                            <button className="btn btn-secondary profile-button" type="button" onClick={this.updatePassword}>Change Password</button>
+                    <div className="col-md-7 py-5">
+                        <h4 className="text-black">Change Password</h4>
+                        <div className="row">
+                            <div className="col-md-6">
+                                <div className="col-md-12 mt-4">
+                                    <label className="labels">Old Password</label>
+                                    <input type="password" className="form-control" value={this.state.password.old} onChange={(e) => this.setState({ password: { old: e.target.value } })} />
+                                </div> <br />
+                                <div className="col-md-12">
+                                    <label className="labels" >New Password</label>
+                                    <input type="password" className="form-control" value={this.state.password.new} onChange={(e) => this.setState({ password: { new: e.target.value } })} />
+                                </div> <br />
+                                <div className="col-md-12">
+                                    <label className="labels">Reapeat Password</label>
+                                    <input type="password" className="form-control" value={this.state.password.repeat} onChange={(e) => this.setState({ password: { repeat: e.target.value } })} />
+                                </div> <br />
+                                <button className="btn btn-primary profile-button" type="button" onClick={this.updatePassword}>Change Password</button>
+                            </div>
+                            {
+                                this.state.passwordValid.showErrors ?
+                                    <div className="col-md-5 mt-5 text-left">
+                                        <ShowPasswordMsg match={this.state.passwordValid.match} text="Password must match" /><br />
+                                        <ShowPasswordMsg match={this.state.passwordValid.withNumbers} text="Password must contain at least one number" /><br />
+                                        <ShowPasswordMsg match={this.state.passwordValid.withChars} text=" Password must be at least 6 characters long" /><br />
+                                    </div>
+                                    :
+                                    null
+                            }
                         </div>
                     </div>
                 </div>
             </div>
-
-            // <div classNameName="wrapper">
-            //     <h3 classNameName="text-black">Profile details</h3>
-            //     <button classNameName="btn btn-secondary btn-sm d-flex mx-2" onClick={this.handleEditClick}>
-            //         Edit ✏️
-            //     </button>
-            //     <div classNameName="row mt-3 ">
-            //         <div classNameName="col-3">
-            //             First Name
-            //         </div>
-
-            //         <div classNameName="col-3">
-            //             Last Name
-            //         </div>
-            //         <div classNameName="col-3">
-            //             Phone Number
-            //         </div>
-            //         <div classNameName="col-3">
-            //             Country
-            //         </div>
-            //     </div>
-            //     <div classNameName="row mt-2">
-
-            //         <div classNameName="col-3">
-            //             <input type="text" placeholder="Last Name" disabled={!this.state.editMode} />
-            //         </div>
-            //         <div classNameName="col-3">
-            //             <input type="tel" placeholder="" disabled={!this.state.editMode} pattern="[0][5][0-9]{8}" />
-            //         </div>
-            //         <div classNameName="col-3">
-            //             <input type="text" placeholder="Country" disabled={!this.state.editMode} />
-            //         </div>
-            //     </div>
-            //     {
-            //         this.state.editMode ?
-            //             <button classNameName="btn btn-primary mt-4" onClick={this.updateDetails}>Update</button>
-            //             :
-            //             null
-            //     }
-            //     <hr />
-            //     <div classNameName="row">
-            //         <h5 classNameName="text-black">Change password</h5>
-            //     </div>
-            //     <div classNameName="row">
-            //         <div classNameName="col-6 mt-5">
-            //             <form classNameName="user" onSubmit={this.onSubmit}>
-            //                 <div classNameName="form-group">
-            //                     <div classNameName="row">
-            //                         <input type="password" placeholder="Old Password" />
-            //                     </div>
-            //                 </div>
-            //                 <div classNameName="form-group">
-            //                     <div classNameName="row">
-            //                         <input type="password" placeholder="New Password" />
-            //                     </div>
-            //                 </div>
-            //                 <div classNameName="form-group">
-            //                     <div classNameName="row">
-            //                         <input type="password" placeholder="Repeat Password" />
-            //                     </div>
-            //                 </div>
-            //                 <div classNameName="form-group">
-            //                     <div classNameName="row">
-            //                         <input type="submit" value="Change passowrd" classNameName="btn btn-primary " />
-            //                     </div>
-            //                 </div>
-            //             </form>
-            //         </div>
-            //         <div classNameName="col-6 mt-5 text-left">
-            //             <div classNameName="row  ">
-            //                 {
-            //                     this.state.passwordValid.match ?
-            //                         <div classNameName="text-success">
-            //                             <CorrectSvg height="24" width="24" text-success /> Password must match
-            //                         </div>
-            //                         :
-            //                         <div classNameName="text-danger">
-            //                             <ErrorSvg height="24" width="24" /> Password must match
-            //                         </div>
-            //                 }
-            //             </div>
-            //             <div classNameName="row mt-3">
-            //                 {
-            //                     this.state.passwordValid.withNumbers ?
-            //                         <div classNameName="text-success">
-            //                             <CorrectSvg height="24" width="24" text-success /> Password must contain at least one number
-            //                         </div>
-            //                         :
-            //                         <div classNameName="text-danger">
-            //                             <ErrorSvg height="24" width="24" /> Password must contain at least one number
-            //                         </div>
-            //                 }
-            //             </div>
-            //             <div classNameName="row mt-3">
-            //                 {
-            //                     this.state.passwordValid.withChars ?
-            //                         <div classNameName="text-success">
-            //                             <CorrectSvg height="24" width="24" text-success /> Password must contain at least one number
-            //                         </div>
-            //                         :
-            //                         <div classNameName="text-danger">
-            //                             <ErrorSvg height="24" width="24" /> Password must contain at least 6 characters long
-            //                         </div>
-            //                 }
-            //             </div>
-
-            //         </div>
-
-
-
-            //     </div>
-
-
-
-
-            // </div>
         );
     }
 }
