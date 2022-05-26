@@ -1,4 +1,5 @@
 const express = require("express");
+const axios = require("axios");
 
 const router = express.Router();
 
@@ -30,13 +31,39 @@ router.post("/sign-up", (req, res) => {
   });
 });
 router.post("/sign-in", (req, res) => {
-  User.find({ email: req.body.email })
-    .then((model) => {
-      res.json(model[0]);
+  User.findOne({ email: req.body.email })
+    .then((data) => {
+      if(!data || data.password !== req.body.password){
+        res.status(401).json({error : "Invalid Email or Password"})
+      }else{
+        res.json(data);
+      }
     })
     .catch((error) => {
       res.json(error);
     });
+});
+
+router.post("/recaptcha", async (req, res, next) => {
+  if (!req.body.token) {
+    return res.status(400).json({ error: "reCaptcha token is missing" });
+  }
+
+  try {
+    const googleVerifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.token}`;
+    const response = await axios.post(googleVerifyUrl);
+    const { success } = response.data;
+    if (success) {
+      //Do sign up and store user in database
+      return res.json({ success: true });
+    } else {
+      return res
+        .status(400)
+        .json({ error: "Invalid Captcha. Try again." });
+    }
+  } catch (e) {
+    return res.status(400).json({ error: "reCaptcha error." });
+  }
 });
 
 module.exports = router;

@@ -1,12 +1,23 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-//import ReCAPTCHA from "react-google-recaptcha";
-import axios from "axios";
+import Axios from "axios";
+
+import RecaptchaWrapper from "./RecaptchaWrapper";
+import PopupMessage from "./PopupMessage";
+
 class LoginForm extends Component {
   state = {
     email: "",
     password: "",
     isRememberMe: false,
+
+    verified: false,
+
+    errors: {
+      showErrPopup: false,
+      msg: '',
+      validateChanger: false
+    }
   };
   onChangeEmail = (e) => {
     this.setState({ email: e.target.value });
@@ -20,11 +31,14 @@ class LoginForm extends Component {
 
   onSubmit = (e) => {
     e.preventDefault();
+    if (!this.state.verified)
+      return
     const userObject = {
       email: this.state.email,
       password: this.state.password,
     };
-    axios
+
+    Axios
       .post("/api/sign-in", userObject)
       .then((res) => {
         this.props.handleLogin(
@@ -33,19 +47,31 @@ class LoginForm extends Component {
           res.data.firstName
         );
         console.log(`login remember ${this.state.isRememberMe}`);
-        console.log(res.data);
+        console.log(res);
       })
-      .catch((error) => {
-        console.log(error);
+      .catch((AxiosError) => {
+        console.log(AxiosError.response);
+        this.setState({
+          errors: {
+            showErrPopup: !this.state.errors.showErrPopup ,
+            msg: AxiosError.response.data.error,
+            validateChanger: true
+          }
+        })
       });
-    //this.setState({ name: '', email: '' ,isRememberMe:false})
   };
-  onChangeCAPTCHA = (value) => {
-    console.log(`CAPTCHA = ${value}`);
-    // send value token to server for verigying
-  };
+    //this is for rerendering the errors popup if needed
+    componentDidUpdate() {
+      if (this.state.errors.validateChanger && !this.state.errors.showErrPopup)
+        this.setState({
+          errors: {
+            ...this.state.errors,
+            showErrPopup: !this.state.errors.showErrPopup,
+          }
+        })
+    }
+
   render() {
-    JSON.stringify(this.state);
     return (
       <div className="wrapper">
         <div className="container">
@@ -102,10 +128,9 @@ class LoginForm extends Component {
                             </div>
                           </div>
                           <div className="form-group d-flex justify-content-center">
-                            {/* <ReCAPTCHA
-                                                            sitekey="6LeJ9wUgAAAAAF7KLJpNWcJChvFvNvz27yZUlpS-"
-                                                            onChange={this.onChangeCAPTCHA}
-                                                        /> */}
+                            <RecaptchaWrapper
+                              afterVerify={(isVerified, data) => this.setState({ verified: isVerified })}
+                            />
                           </div>
                           <div className="form-group">
                             <input
@@ -134,6 +159,19 @@ class LoginForm extends Component {
             </div>
           </div>
         </div>
+        {
+          this.state.errors.showErrPopup ?
+            <PopupMessage
+              title="Error"
+              body={
+                <div className="text-black">{this.state.errors.msg}</div>
+              }
+              withOk={false}
+              withClose={false}
+            />
+            :
+            null
+        }
       </div>
     );
   }

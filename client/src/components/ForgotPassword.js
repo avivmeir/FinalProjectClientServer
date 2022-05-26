@@ -1,14 +1,26 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import ReCAPTCHA from 'react-google-recaptcha';
+import RecaptchaWrapper from './RecaptchaWrapper';
 
 class ForgotPassword extends Component {
-    onChangeCAPTCHA= (value)=>{
-        //send to server for verifying
+    state = {
+        email: '',
+        verified: false
+    }
+    onChangeEmail = (e) => this.setState({ email: e.target.value })
+    onSubmit = (e) => {
+        e.preventDefault();
+        if (this.state.verified)
+            console.log("verified ")
+        else
+            console.log("not verified")
+        console.log(`email : ${this.state.email}`)
+
+        //send email for server treatment
     }
     render() {
         return (
-            <div classNameName="wrapper">
+            <div className="wrapper">
                 <div className="container">
 
                     <div className="row justify-content-center">
@@ -26,21 +38,19 @@ class ForgotPassword extends Component {
                                                     <p className="mb-4">We get it, stuff happens. Just enter your email address below
                                                         and we'll send you a link to reset your password!</p>
                                                 </div>
-                                                <form className="user">
+                                                <form className="user" onSubmit={this.onSubmit}>
                                                     <div className="form-group">
                                                         <input type="email" className="form-control form-control-user"
+                                                            onChange={this.onChangeEmail} value={this.state.email}
                                                             id="exampleInputEmail" aria-describedby="emailHelp"
                                                             placeholder="Enter Email Address..." />
                                                     </div>
                                                     <div className="form-group d-flex justify-content-center">
-                                                        <ReCAPTCHA
-                                                            sitekey="6LeJ9wUgAAAAAF7KLJpNWcJChvFvNvz27yZUlpS-"
-                                                            onChange={this.onChangeCAPTCHA}
+                                                        <RecaptchaWrapper
+                                                            afterVerify={(isVerified, data) => this.setState({ verified: isVerified })}
                                                         />
                                                     </div>
-                                                    <Link className="btn btn-primary btn-user btn-block" to={"/sign-in"}>
-                                                        Reset Password
-                                                    </Link>
+                                                    <input type="submit" value="Reset Password" className="btn btn-primary btn-user btn-block" />
                                                 </form>
                                                 <hr />
                                                 <div className="text-center">

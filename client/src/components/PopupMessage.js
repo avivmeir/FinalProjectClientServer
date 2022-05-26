@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Navigate } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
+import { Link } from "react-router-dom";
+
 
 class PopupMessage extends Component {
 
@@ -15,6 +17,11 @@ class PopupMessage extends Component {
                 trigger={<div />}
                 modal
                 open={true}
+                closeOnDocumentClick={!this.props.closeOnlyWithBtn}
+                onClose={() => {
+                    if(this.props.onClose )
+                        this.props.onClose()
+                }}
             >
 
                 {close => (
@@ -22,7 +29,7 @@ class PopupMessage extends Component {
                         <div className="modal-dialog modal-lg m-0 p-0">
                             <div className="modal-content  m-0 p-0">
                                 <div className="modal-header">
-                                    <h5 className="modal-title" id="exampleModalLabel">{this.props.title}</h5>
+                                    <h5 className="modal-title text-black" id="exampleModalLabel">{this.props.title}</h5>
                                     <button className="btn-close" onClick={close} data-bs-dismiss="modal" aria-label="Close" />
                                 </div>
                                 <div className="modal-body">
@@ -31,19 +38,15 @@ class PopupMessage extends Component {
                                 <div className="modal-footer">
                                     {
                                         this.props.withOk ?
-                                            <button type="button" onClick={() => { this.setState({ navigate: true }) }} className="btn btn-primary">{this.props.okBtnText}</button>
+                                            <Link to={this.props.navigateTo} className="btn btn-primary">{this.props.okBtnText}</Link>
                                             :
                                             null
                                     }
                                     {
                                         this.props.withClose ?
-                                            <button type="button" onClick={() => { this.props.onClose() }} className="btn btn-secondary" data-bs-dismiss="modal">{this.props.closeBtnText}</button>
+                                        <Link to={this.props.navigateTo} className="btn btn-primary">{this.props.closeBtnText}</Link>
                                             :
                                             null
-                                    }
-                                    {
-                                        this.state.navigate ? 
-                                        <Navigate to ={this.props.navigateTo}/> : null
                                     }
                                 </div>
                             </div>
