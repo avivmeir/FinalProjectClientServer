@@ -16,7 +16,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      logged: JSON.parse(window.localStorage.getItem("user")) || false,
+      logged: JSON.parse(window.localStorage.getItem("logged")) || false,
       email: window.localStorage.getItem("email") || "",
       firstName: window.localStorage.getItem("firstName") || "",
     };
@@ -34,8 +34,10 @@ class App extends Component {
   handleLogin = (isRemember, emailAdress, firstName) => {
     this.setState({ logged: true, email: emailAdress, firstName: firstName });
     if (isRemember) {
-      window.localStorage.setItem("user", isRemember);
+      window.localStorage.setItem("logged", isRemember);
       window.localStorage.setItem("email", emailAdress);
+      window.localStorage.setItem("firstName", firstName);
+
     }
   };
   handleLogout = () => {

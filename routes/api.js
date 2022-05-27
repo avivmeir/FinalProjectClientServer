@@ -43,24 +43,21 @@ router.post("/sign-in", (req, res) => {
       res.json(error);
     });
 });
-router.post("/dashboard/profile/", (req, res) => {
-  console.log(req.body.email);
+router.post("/dashboard/profile", (req, res) => {
   User.findOne({ email: req.body.email }).then((data) => {
     if (!data) {
       res.status(401).json({ error: "Invalid Email" });
     } else {
-      console.log("sucess" + res.data);
       res.json(data);
     }
   });
 });
-router.put("/dashboard/profile/", (req, res) => {
+
+router.put("/dashboard/profile", (req, res) => {
   User.findOneAndUpdate({ email: req.body.email }, req.body).then((data) => {
     if (!data) {
       res.status(401).json({ error: "Invalid Email" });
     } else {
-      console.log("sucess" + data);
-
       res.json(data);
     }
   });

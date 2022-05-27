@@ -11,13 +11,10 @@ const PORT = process.env.PORT || 8080; // Step 1
 const routes = require("./routes/api");
 
 // Step 2
-mongoose.connect(
-  "mongodb+srv://user:webshop123@database.3qzpr.mongodb.net/Test2?retryWrites=true&w=majority",
-  {
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/mern_proj', {
     useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }
-);
+    useUnifiedTopology: true
+});
 
 mongoose.connection.on("connected", () => {
   console.log("Mongoose is connected!!!!");
@@ -35,13 +32,13 @@ if (process.env.NODE_ENV === "production") {
 // Step 1:
 app.use(express.static(path.resolve(__dirname, "./client/build")));
 
-app.all("/api/*", function(req, res, next) {
+app.all("/api/*", function (req, res, next) {
   console.log("General Validations");
   next();
 });
 
 // Step 2:
-app.get("*", function(request, response) {
+app.get("*", function (request, response) {
   response.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
 });
 

@@ -3,12 +3,7 @@ import DashBody from "./DashBody";
 import Footer from "./Footer";
 import SideNavbar from "./SideNavbar";
 import TopBar from "./TopBar";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import {Routes, Route} from "react-router-dom";
 import BuyPc from "./BuyPc";
 import BuyPhone from "./BuyPhone";
 import About from "./About";

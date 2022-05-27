@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import { ReactComponent as ErrorSvg } from "../app_photos/error-icon.svg";
 import { ReactComponent as CorrectSvg } from "../app_photos/correct-icon.svg";
 import axios from "axios";
+import { stringIsNotBlank, stringIsBlank, validName } from "../Utils"
+import PopupMessage from "./PopupMessage";
+
 function ShowPasswordMsg(props) {
   return props.match ? (
     <div className="text-success">
@@ -14,31 +17,48 @@ function ShowPasswordMsg(props) {
   );
 }
 class Profile extends Component {
-  state = {
-    firstrender: true,
-    editMode: false,
-    details: {
-      firstName: "first",
-      lastName: "last",
-      phone: "0524453933",
-      country: "IL",
-      email: "example@ex.com",
-      city: "ka",
-      street: "aw",
-      zipCode: "11",
-    },
-    password: {
-      old: "",
-      new: "",
-      repeat: "",
-    },
-    passwordValid: {
-      showErrors: false,
-      match: true,
-      withNumbers: false,
-      withChars: false,
-    },
-  };
+  constructor(props) {
+    super(props)
+    this.state = {
+      firstRender: true,
+      editMode: false,
+
+      details: {
+        firstName: "",
+        lastName: "",
+        phone: "",
+        country: "",
+        email: "",
+        city: "",
+        street: "",
+        zipCode: ""
+      },
+      initialDetails: {},
+      fieldsValid: {
+        showErrors: false,
+        firstName: true,
+        lastName: true,
+        validUpdate: true,
+        validateChanger: false
+      },
+      password: {
+        old: "",
+        new: "",
+        repeat: "",
+      },
+      passwordValid: {
+        showErrors: false,
+        match: true,
+        withNumbers: false,
+        withChars: false,
+      },
+    };
+  }
+  componentDidMount() {
+    console.log("mounted")
+    this.getUserDetails()
+  }
+
   onChangeFirstName = (e) => {
     this.setState((prevState) => ({
       details: {
@@ -108,12 +128,14 @@ class Profile extends Component {
   };
   updateDetails = (e) => {
     e.preventDefault();
-    axios.put(`/api/dashboard/profile/`, this.state.details).then((res) => {
-      console.log(res.data);
+    //user cant erase fields , only update
+    if (!this.fieldsAreValid()) {
+      return
+    }
+    axios.put(`/api/dashboard/profile`, this.state.details).then((res) => {
       this.setState({ editMode: false });
+      this.getUserDetails()
     });
-
-    console.log("update details clicked");
   };
   updatePassword = (e) => {
     e.preventDefault();
@@ -121,27 +143,75 @@ class Profile extends Component {
   };
   getUserDetails = () => {
     const userObject = { email: this.props.emailAdress };
-    console.log("trying");
-    if (this.state.firstrender) {
-      axios.post(`/api/dashboard/profile/`, userObject).then((res) => {
-        this.setState({
-          details: {
-            firstName: res.data.firstName,
-            lastName: res.data.lastName,
-            phone: res.data.phone || "",
-            country: res.data.country || "",
-            email: this.props.emailAdress,
-            city: res.data.city || "",
-            street: res.data.street || "",
-            zipCode: res.data.zipCode || "",
-          },
-        });
+    axios.post(`/api/dashboard/profile`, userObject).then((res) => {
+      this.setState({
+        details: {
+          firstName: res.data.firstName,
+          lastName: res.data.lastName,
+          phone: res.data.phone || "",
+          country: res.data.country || "",
+          email: this.props.emailAdress,
+          city: res.data.city || "",
+          street: res.data.street || "",
+          zipCode: res.data.zipCode || "",
+        }
       });
-      this.setState({ firstrender: false });
-    }
+      this.setState({ initialDetails: { ...res.data } })
+    });
   };
+  fieldsAreValid() {
+    let validFirstName = true
+    let validLastName = true
+
+    if (!validName(this.state.details.firstName)) {
+      validFirstName = false
+    }
+    if (!validName(this.state.details.lastName)) {
+      validLastName = false
+    }
+    let validUpdate = (
+      stringIsNotBlank(this.state.details.email)
+      && (stringIsNotBlank(this.state.details.phone) || stringIsBlank(this.state.initialDetails.phone))
+      && (stringIsNotBlank(this.state.details.country) || stringIsBlank(this.state.initialDetails.country))
+      && (stringIsNotBlank(this.state.details.city) || stringIsBlank(this.state.initialDetails.city))
+      && (stringIsNotBlank(this.state.details.street) || stringIsBlank(this.state.initialDetails.street))
+      && (stringIsNotBlank(this.state.details.zipCode) || stringIsBlank(this.state.initialDetails.zipCode))
+    )
+    let validation = validFirstName && validLastName && validUpdate
+    this.setState({
+      fieldsValid: {
+        firstName: validFirstName,
+        lastName: validLastName,
+        validUpdate: validUpdate,
+        validateChanger: !validation,
+        showErrors: !this.state.fieldsValid.showErrors
+      }
+    })
+
+    return validation
+  }
+
+  //this is for rerendering the errors popup if needed
+  componentDidUpdate() {
+    if (this.state.fieldsValid.validateChanger && !this.state.fieldsValid.showErrors)
+      this.setState({
+        fieldsValid: {
+          ...this.state.fieldsValid,
+          showErrors: !this.state.fieldsValid.showErrors,
+        }
+      })
+      else if (!this.state.fieldsValid.validateChanger && this.state.fieldsValid.showErrors){
+        this.setState({
+          fieldsValid: {
+            ...this.state.fieldsValid,
+            showErrors: !this.state.fieldsValid.showErrors,
+          }
+        })
+      }
+  }
+
   render() {
-    this.getUserDetails();
+    //  this.getUserDetails();
     return (
       <div className="wrapper">
         <div className="row">
@@ -203,7 +273,7 @@ class Profile extends Component {
                   <div className="col-md-12">
                     <label className="d-flex">Email</label>
                     <input
-                      type="text"
+                      type="email"
                       className="form-control"
                       disabled={!this.state.editMode}
                       value={this.state.details.email}
@@ -323,6 +393,22 @@ class Profile extends Component {
             </div>
           </div>
         </div>
+        {
+          this.state.fieldsValid.showErrors ?
+            <PopupMessage
+              title="Error"
+              body={
+                <>
+                  {this.state.fieldsValid.firstName ? null : <div>First Name is not valid</div>}
+                  {this.state.fieldsValid.lastName ? null : <div>Last Name is not valid</div>}
+                  {this.state.fieldsValid.validUpdate ? null : <div>You cannot delete the existing data, you can only update it</div>}
+
+                </>
+              }
+            />
+            :
+            null
+        }
       </div>
     );
   }

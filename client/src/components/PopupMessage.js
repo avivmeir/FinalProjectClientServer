@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Navigate } from 'react-router-dom';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import { Link } from "react-router-dom";
