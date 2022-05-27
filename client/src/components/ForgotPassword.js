@@ -1,23 +1,31 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import RecaptchaWrapper from './RecaptchaWrapper';
+import Axios from "axios";
+import PopupMessage from './PopupMessage';
 
 class ForgotPassword extends Component {
     state = {
         email: '',
-        verified: false
+        verified: false,
+        msgHeader: '',
+        msg: ''
     }
     onChangeEmail = (e) => this.setState({ email: e.target.value })
+
     onSubmit = (e) => {
         e.preventDefault();
-        if (this.state.verified)
-            console.log("verified ")
-        else
-            console.log("not verified")
-        console.log(`email : ${this.state.email}`)
-
         //send email for server treatment
-    }
+        const emailObject = { email: this.state.email };
+        Axios.post(`/api/forgot`, emailObject)
+            .then((res) => {
+                this.setState({ msgHeader: 'Verify Email', msg: 'We sent a verification link to your mail' })
+            })
+            .catch((AxiosError) => {
+                this.setState({ msgHeader: 'Error', msg: AxiosError.response.data.error })
+            });
+    };
+
     render() {
         return (
             <div className="wrapper">
@@ -52,7 +60,7 @@ class ForgotPassword extends Component {
                                                         />
                                                     </div>
                                                     <input type="submit" value="Reset Password" className="btn btn-primary btn-user btn-block"
-                                                    disabled={!this.state.verified} />
+                                                        disabled={!this.state.verified} />
                                                 </form>
                                                 <hr />
                                                 <div className="text-center">
@@ -74,8 +82,21 @@ class ForgotPassword extends Component {
                         </div>
 
                     </div>
-
                 </div>
+                {
+                    this.state.msgHeader && this.state.msg ?
+                        <PopupMessage
+                            title={this.state.msgHeader}
+                            body={
+                                <div className="text-black">{this.state.msg}</div>
+                            }
+                            onClose={() => {
+                                this.setState({msg:'',msgHeader:''})
+                            }}
+                        />
+                        :
+                        null
+                }
             </div>
         );
     }

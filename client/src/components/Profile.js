@@ -34,11 +34,12 @@ class Profile extends Component {
         zipCode: ""
       },
       initialDetails: {},
-      fieldsValid: {
-        showPopup: false,
-        validateChanger: false,
-        msg: [],
-      },
+
+      popTitle: '',
+      popMsg: [],
+
+
+
       password: {
         old: "",
         new: "",
@@ -134,23 +135,16 @@ class Profile extends Component {
       .then((res) => {
         this.setState(prevState => ({
           editMode: false,
-          fieldsValid: {
-            ...prevState.fieldsValid,
-            showPopup: !this.state.fieldsValid.showPopup,
-            validateChanger: true
-          }
+          popTitle: 'Successful Update',
+          popMsg: ['The details have been updated successfully']
         }));
         this.getUserDetails()
       })
       .catch((AxiosError) => {
         console.log(AxiosError.response);
         this.setState(prevState => ({
-          fieldsValid: {
-            ...prevState.fieldsValid,
-            showPopup: !this.state.fieldsValid.showPopup,
-            msg: [...prevState.fieldsValid.msg, (AxiosError.response.data.error)],
-            validateChanger: true
-          }
+          popTitle: 'Error',
+          popMsg: [...prevState.popMsg, (AxiosError.response.data.error)]
         }))
       });
   };
@@ -179,15 +173,13 @@ class Profile extends Component {
       .catch((AxiosError) => {
         console.log(AxiosError.response);
         this.setState(prevState => ({
-          fieldsValid: {
-            ...prevState.fieldsValid,
-            showPopup: !this.state.fieldsValid.showPopup,
-            msg: [...prevState.fieldsValid.msg, (AxiosError.response.data.error)],
-            validateChanger: true
-          }
+          popTitle: 'Error',
+          popMsg: [...prevState.popMsg, (AxiosError.response.data.error)]
+
         }))
       });
   };
+
   fieldsAreValid() {
     let validFirstName = true
     let validLastName = true
@@ -214,30 +206,11 @@ class Profile extends Component {
     }
     let validation = validFirstName && validLastName && validUpdate
 
-    this.setState(prevState => ({
-      fieldsValid: {
-        ...prevState.fieldsValid,
-        msg: errMsg,
-        validateChanger: !validation,
-        showPopup: !this.state.fieldsValid.showPopup
-      }
-    }))
+    this.setState({ popTitle: 'Error', popMsg: errMsg })
 
     return validation
   }
 
-  //this is for rerendering the errors popup if needed
-  componentDidUpdate() {
-    if ((this.state.fieldsValid.validateChanger && !this.state.fieldsValid.showPopup)
-      || (!this.state.fieldsValid.validateChanger && this.state.fieldsValid.showPopup))
-      this.setState(prevState => ({
-        fieldsValid: {
-          ...prevState.fieldsValid,
-          showPopup: !prevState.fieldsValid.showPopup,
-        }
-      }))
-
-  }
 
   render() {
     //  this.getUserDetails();
@@ -429,14 +402,14 @@ class Profile extends Component {
           </div>
         </div>
         {
-          this.state.fieldsValid.showPopup && this.state.fieldsValid.msg.length > 0 ?
+          this.state.popTitle && this.state.popMsg.length > 0 ?
             <PopupMessage
-              title="Error"
+              title={this.state.popTitle}
               body={
                 <>
                   {
                     <ul>
-                      {this.state.fieldsValid.msg.map((item, key) => (
+                      {this.state.popMsg.map((item, key) => (
                         <li key={key} className="text-black mt-1">{item}</li>
                       ))}
                     </ul>
@@ -444,32 +417,11 @@ class Profile extends Component {
                 </>
               }
               onClose={() => {
-                this.setState(prevState => ({
-                  fieldsValid: {
-                    ...prevState.fieldsValid,
-                    msg: []
-                  }
-                }))
+                this.setState({ popMsg: '', popTitle: '' })
               }}
             />
             :
-            this.state.fieldsValid.showPopup ?
-              <PopupMessage
-                title="Successful Update"
-                body={
-                  <div className="text-black">The details have been updated successfully</div>
-                }
-                onClose={() => {
-                  this.setState(prevState => ({
-                    fieldsValid: {
-                      ...prevState.fieldsValid,
-                      msg: []
-                    }
-                  }))
-                }}
-              />
-              :
-              null
+            null
         }
       </div>
     );

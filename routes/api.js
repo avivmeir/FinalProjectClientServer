@@ -30,6 +30,7 @@ router.post("/sign-up", (req, res) => {
     });
   });
 });
+
 router.post("/sign-in", (req, res) => {
   User.findOne({ email: req.body.email })
     .then((data) => {
@@ -43,6 +44,7 @@ router.post("/sign-in", (req, res) => {
       res.json(error);
     });
 });
+
 router.post("/dashboard/profile", (req, res) => {
   User.findOne({ email: req.body.email }).then((data) => {
     if (!data) {
@@ -63,6 +65,18 @@ router.put("/dashboard/profile", (req, res) => {
   });
 });
 
+router.post("/forgot", (req, res) => {
+  User.findOne({ email: req.body.email }).then((data) => {
+    if (!data) {
+      res.status(401).json({ error: "Invalid Email" });
+    } else {
+      //send verification mail
+
+      
+      res.json(data);
+    }
+  });
+});
 router.post("/recaptcha", async (req, res, next) => {
   if (!req.body.token) {
     return res.status(400).json({ error: "reCaptcha token is missing" });

@@ -11,12 +11,8 @@ class LoginForm extends Component {
     isRememberMe: false,
 
     verified: false,
+    errMsg:''
 
-    errors: {
-      showErrPopup: false,
-      msg: '',
-      validateChanger: false
-    }
   };
   onChangeEmail = (e) => {
     this.setState({ email: e.target.value });
@@ -31,13 +27,7 @@ class LoginForm extends Component {
   onSubmit = (e) => {
     e.preventDefault();
     if (!this.state.verified) {
-      this.setState({
-        errors: {
-          showErrPopup: !this.state.errors.showErrPopup,
-          msg: 'Recaptcha is neccessary',
-          validateChanger: true
-        }
-      })
+      this.setState({errMsg: 'Recaptcha is neccessary'})
       return
     }
 
@@ -59,25 +49,10 @@ class LoginForm extends Component {
       })
       .catch((AxiosError) => {
         console.log(AxiosError.response);
-        this.setState({
-          errors: {
-            showErrPopup: !this.state.errors.showErrPopup,
-            msg: AxiosError.response.data.error,
-            validateChanger: true
-          }
-        })
+        this.setState({errMsg: AxiosError.response.data.error})
       });
   };
-  //this is for rerendering the errors popup if needed
-  componentDidUpdate() {
-    if (this.state.errors.validateChanger && !this.state.errors.showErrPopup)
-      this.setState({
-        errors: {
-          ...this.state.errors,
-          showErrPopup: !this.state.errors.showErrPopup,
-        }
-      })
-  }
+
 
   render() {
     return (
@@ -100,6 +75,7 @@ class LoginForm extends Component {
                           <div className="form-group">
                             <input
                               type="email"
+                              required
                               className="form-control form-control-user"
                               value={this.state.email}
                               onChange={this.onChangeEmail}
@@ -111,6 +87,7 @@ class LoginForm extends Component {
                           <div className="form-group">
                             <input
                               type="password"
+                              required
                               className="form-control form-control-user"
                               value={this.state.password}
                               onChange={this.onChangePassword}
@@ -166,14 +143,15 @@ class LoginForm extends Component {
           </div>
         </div>
         {
-          this.state.errors.showErrPopup ?
+          this.state.errMsg ?
             <PopupMessage
               title="Error"
               body={
-                <div className="text-black">{this.state.errors.msg}</div>
+                <div className="text-black">{this.state.errMsg}</div>
               }
-              withOk={false}
-              withClose={false}
+              onClose={()=>{
+                this.setState({errMsg:''})
+              }}
             />
             :
             null
