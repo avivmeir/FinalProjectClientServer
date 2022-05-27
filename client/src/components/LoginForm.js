@@ -141,9 +141,7 @@ class LoginForm extends Component {
                             />
                           </div>
                           <div className="form-group">
-                            <input
-                              type="submit"
-                              value="Login"
+                            <input type="submit" value="Login" disabled ={!this.state.verified}
                               className="btn btn-primary btn-user btn-block"
                             />
                           </div>

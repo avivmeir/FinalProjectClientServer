@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import "reactjs-popup/dist/index.css";
 import PopupMessage from "./PopupMessage";
 import RecaptchaWrapper from "./RecaptchaWrapper";
-import { validPassword,validName } from "../Utils"
+import { validPassword, validName } from "../Utils"
 
 class CreateUser extends Component {
   state = {
@@ -45,7 +45,7 @@ class CreateUser extends Component {
       validationResult = false;
       errMsg.push("Recaptcha is necessary")
     }
-    if(!validName(this.state.firstName) || !validName(this.state.lastName)){
+    if (!validName(this.state.firstName) || !validName(this.state.lastName)) {
       validationResult = false;
       errMsg.push("Name is not valid")
     }
@@ -210,9 +210,7 @@ class CreateUser extends Component {
                           }))}
                         />
                       </div>
-                      <input
-                        type="submit"
-                        value="Register Account"
+                      <input type="submit" value="Register Account" disabled={!this.state.validation.captchaVerified}
                         className="btn btn-primary btn-user btn-block"
                       />
                     </form>
@@ -275,15 +273,13 @@ class CreateUser extends Component {
           :
           null
         }
-        {this.state.validation.showErrors ?
-
-          <PopupMessage
-            title="Error"
-            body={
-              <>
-                {
-
-                  this.state.validation.msg ?
+        {
+          this.state.validation.showErrors && this.state.validation.msg.length > 0 ?
+            <PopupMessage
+              title="Error"
+              body={
+                <>
+                  {
                     <ul>
                       {
                         this.state.validation.msg.map((item, key) => (
@@ -291,21 +287,20 @@ class CreateUser extends Component {
                         ))
                       }
                     </ul>
-                    : null
-                }
-              </>
-            }
-            onClose={() => {
-              this.setState(prevState => ({
-                validation: {
-                  ...prevState.validation,
-                  msg: []
-                }
-              }))
-            }}
-          />
-          :
-          null
+                  }
+                </>
+              }
+              onClose={() => {
+                this.setState(prevState => ({
+                  validation: {
+                    ...prevState.validation,
+                    msg: []
+                  }
+                }))
+              }}
+            />
+            :
+            null
         }
       </div >
     );

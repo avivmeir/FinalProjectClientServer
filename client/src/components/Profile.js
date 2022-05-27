@@ -35,7 +35,7 @@ class Profile extends Component {
       },
       initialDetails: {},
       fieldsValid: {
-        showErrors: false,
+        showPopup: false,
         validateChanger: false,
         msg: [],
       },
@@ -132,7 +132,14 @@ class Profile extends Component {
     }
     axios.put(`/api/dashboard/profile`, this.state.details)
       .then((res) => {
-        this.setState({ editMode: false });
+        this.setState(prevState => ({
+          editMode: false,
+          fieldsValid: {
+            ...prevState.fieldsValid,
+            showPopup: !this.state.fieldsValid.showPopup,
+            validateChanger: true
+          }
+        }));
         this.getUserDetails()
       })
       .catch((AxiosError) => {
@@ -140,8 +147,8 @@ class Profile extends Component {
         this.setState(prevState => ({
           fieldsValid: {
             ...prevState.fieldsValid,
-            showErrors: !this.state.fieldsValid.showErrors,
-            msg: prevState.fieldsValid.msg.concat(AxiosError.response.data.error),
+            showPopup: !this.state.fieldsValid.showPopup,
+            msg: [...prevState.fieldsValid.msg, (AxiosError.response.data.error)],
             validateChanger: true
           }
         }))
@@ -168,7 +175,18 @@ class Profile extends Component {
         }
       });
       this.setState({ initialDetails: { ...res.data } })
-    });
+    })
+      .catch((AxiosError) => {
+        console.log(AxiosError.response);
+        this.setState(prevState => ({
+          fieldsValid: {
+            ...prevState.fieldsValid,
+            showPopup: !this.state.fieldsValid.showPopup,
+            msg: [...prevState.fieldsValid.msg, (AxiosError.response.data.error)],
+            validateChanger: true
+          }
+        }))
+      });
   };
   fieldsAreValid() {
     let validFirstName = true
@@ -201,7 +219,7 @@ class Profile extends Component {
         ...prevState.fieldsValid,
         msg: errMsg,
         validateChanger: !validation,
-        showErrors: !this.state.fieldsValid.showErrors
+        showPopup: !this.state.fieldsValid.showPopup
       }
     }))
 
@@ -210,12 +228,12 @@ class Profile extends Component {
 
   //this is for rerendering the errors popup if needed
   componentDidUpdate() {
-    if ((this.state.fieldsValid.validateChanger && !this.state.fieldsValid.showErrors)
-      || (!this.state.fieldsValid.validateChanger && this.state.fieldsValid.showErrors))
+    if ((this.state.fieldsValid.validateChanger && !this.state.fieldsValid.showPopup)
+      || (!this.state.fieldsValid.validateChanger && this.state.fieldsValid.showPopup))
       this.setState(prevState => ({
         fieldsValid: {
           ...prevState.fieldsValid,
-          showErrors: !prevState.fieldsValid.showErrors,
+          showPopup: !prevState.fieldsValid.showPopup,
         }
       }))
 
@@ -323,13 +341,15 @@ class Profile extends Component {
                   </div>
                 </div>
                 <div className="mt-3 text-center">
-                  {this.state.editMode ? (
-                    <input
-                      className="btn btn-primary profile-button"
-                      type="submit"
-                      value="Update"
-                    />
-                  ) : null}
+                  {
+                    this.state.editMode ? (
+                      <input
+                        className="btn btn-primary profile-button"
+                        type="submit"
+                        value="Update"
+                      />
+                    ) : null
+                  }
                 </div>
               </form>
             </div>
@@ -382,43 +402,44 @@ class Profile extends Component {
                   Change Password
                 </button>
               </div>
-              {this.state.passwordValid.showErrors ? (
-                <div className="col-md-5 mt-5 text-left">
-                  <ShowPasswordMsg
-                    match={this.state.passwordValid.match}
-                    text="Password must match"
-                  />
-                  <br />
-                  <ShowPasswordMsg
-                    match={this.state.passwordValid.withNumbers}
-                    text="Password must contain at least one number"
-                  />
-                  <br />
-                  <ShowPasswordMsg
-                    match={this.state.passwordValid.withChars}
-                    text=" Password must be at least 6 characters long"
-                  />
-                  <br />
-                </div>
-              ) : null}
+              {
+                this.state.passwordValid.showErrors ? (
+                  <div className="col-md-5 mt-5 text-left">
+                    <ShowPasswordMsg
+                      match={this.state.passwordValid.match}
+                      text="Password must match"
+                    />
+                    <br />
+                    <ShowPasswordMsg
+                      match={this.state.passwordValid.withNumbers}
+                      text="Password must contain at least one number"
+                    />
+                    <br />
+                    <ShowPasswordMsg
+                      match={this.state.passwordValid.withChars}
+                      text=" Password must be at least 6 characters long"
+                    />
+                    <br />
+                  </div>
+                )
+                  :
+                  null
+              }
             </div>
           </div>
         </div>
         {
-          this.state.fieldsValid.showErrors ?
+          this.state.fieldsValid.showPopup && this.state.fieldsValid.msg.length > 0 ?
             <PopupMessage
               title="Error"
               body={
                 <>
                   {
-                    this.state.fieldsValid.msg ?
-                      <ul>
-                        {this.state.fieldsValid.msg.map((item, key) => (
-                          <li key={key} className="text-black mt-1">{item}</li>
-                        ))}
-                      </ul>
-                      : null
-
+                    <ul>
+                      {this.state.fieldsValid.msg.map((item, key) => (
+                        <li key={key} className="text-black mt-1">{item}</li>
+                      ))}
+                    </ul>
                   }
                 </>
               }
@@ -432,7 +453,23 @@ class Profile extends Component {
               }}
             />
             :
-            null
+            this.state.fieldsValid.showPopup ?
+              <PopupMessage
+                title="Successful Update"
+                body={
+                  <div className="text-black">The details have been updated successfully</div>
+                }
+                onClose={() => {
+                  this.setState(prevState => ({
+                    fieldsValid: {
+                      ...prevState.fieldsValid,
+                      msg: []
+                    }
+                  }))
+                }}
+              />
+              :
+              null
         }
       </div>
     );

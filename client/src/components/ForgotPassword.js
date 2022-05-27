@@ -41,6 +41,7 @@ class ForgotPassword extends Component {
                                                 <form className="user" onSubmit={this.onSubmit}>
                                                     <div className="form-group">
                                                         <input type="email" className="form-control form-control-user"
+                                                            required
                                                             onChange={this.onChangeEmail} value={this.state.email}
                                                             id="exampleInputEmail" aria-describedby="emailHelp"
                                                             placeholder="Enter Email Address..." />
@@ -50,7 +51,8 @@ class ForgotPassword extends Component {
                                                             afterVerify={(isVerified, data) => this.setState({ verified: isVerified })}
                                                         />
                                                     </div>
-                                                    <input type="submit" value="Reset Password" className="btn btn-primary btn-user btn-block" />
+                                                    <input type="submit" value="Reset Password" className="btn btn-primary btn-user btn-block"
+                                                    disabled={!this.state.verified} />
                                                 </form>
                                                 <hr />
                                                 <div className="text-center">
