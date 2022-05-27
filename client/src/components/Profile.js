@@ -38,18 +38,15 @@ class Profile extends Component {
       popTitle: '',
       popMsg: [],
 
-
-
       password: {
         old: "",
         new: "",
         repeat: "",
+        errors: []
+
       },
       passwordValid: {
-        showErrors: false,
-        match: true,
-        withNumbers: false,
-        withChars: false,
+        errors: []
       },
     };
   }
@@ -151,8 +148,58 @@ class Profile extends Component {
 
   updatePassword = (e) => {
     e.preventDefault();
-    console.log("update password clicked");
+    if (!this.passwordsAreValid()) {
+      return
+    }
+    const password = {
+      email: this.props.emailAdress,
+      old: this.state.password.old,
+      new: this.state.password.new
+    }
+    axios
+      .put(`/api/dashboard/profile/changepassword/`, password)
+      .then((res) => {
+        console.log(res)
+        this.setState({
+          popTitle: 'Update Password',
+          popMsg: [res.data.msg]
+        })
+        this.getUserDetails()
+
+      }).catch((AxiosError) => {
+        console.log(AxiosError)
+        this.setState({
+          popTitle: 'Update Password Failed',
+          popMsg: [AxiosError.response.data.error]
+        })
+      })
+
   };
+  passwordsAreValid = () => {
+    let equals = true
+    let size = true
+    let withNumbers = true
+    let witChars = true
+    let errors = []
+    equals = this.state.password.new === this.state.password.repeat
+    errors.push({ valid: equals, msg: "Password must match" })
+
+
+    size = this.state.password.new.length >= 6
+    errors.push({ valid: size, msg: "Password must be at least 6 characters long" })
+
+    withNumbers = /\d/.test(this.state.password.new)
+    errors.push({ valid: withNumbers, msg: "Password must contain at least one number" })
+
+    witChars = /[a-zA-Z]/.test(this.state.password.new)
+    errors.push({ valid: witChars, msg: "Password must contain at least one character" })
+    this.setState({
+      passwordValid: {
+        errors: errors
+      }
+    })
+    return equals && size && withNumbers && witChars
+  }
   getUserDetails = () => {
     const userObject = { email: this.props.emailAdress };
     axios.post(`/api/dashboard/profile`, userObject).then((res) => {
@@ -337,8 +384,14 @@ class Profile extends Component {
                     type="password"
                     className="form-control"
                     value={this.state.password.old}
-                    onChange={(e) =>
-                      this.setState({ password: { old: e.target.value } })
+                    onChange={(e) => {
+                      this.setState(prevState => ({
+                        password: {
+                          ...prevState.password,
+                          old: e.target.value
+                        }
+                      }))
+                    }
                     }
                   />
                 </div>{" "}
@@ -350,7 +403,12 @@ class Profile extends Component {
                     className="form-control"
                     value={this.state.password.new}
                     onChange={(e) =>
-                      this.setState({ password: { new: e.target.value } })
+                      this.setState(prevState => ({
+                        password: {
+                          ...prevState.password,
+                          new: e.target.value
+                        }
+                      }))
                     }
                   />
                 </div>{" "}
@@ -362,7 +420,12 @@ class Profile extends Component {
                     className="form-control"
                     value={this.state.password.repeat}
                     onChange={(e) =>
-                      this.setState({ password: { repeat: e.target.value } })
+                      this.setState(prevState => ({
+                        password: {
+                          ...prevState.password,
+                          repeat: e.target.value
+                        }
+                      }))
                     }
                   />
                 </div>{" "}
@@ -375,29 +438,29 @@ class Profile extends Component {
                   Change Password
                 </button>
               </div>
-              {
-                this.state.passwordValid.showErrors ? (
-                  <div className="col-md-5 mt-5 text-left">
-                    <ShowPasswordMsg
-                      match={this.state.passwordValid.match}
-                      text="Password must match"
-                    />
-                    <br />
-                    <ShowPasswordMsg
-                      match={this.state.passwordValid.withNumbers}
-                      text="Password must contain at least one number"
-                    />
-                    <br />
-                    <ShowPasswordMsg
-                      match={this.state.passwordValid.withChars}
-                      text=" Password must be at least 6 characters long"
-                    />
-                    <br />
-                  </div>
-                )
-                  :
-                  null
-              }
+
+              <div className="col-md-5 mt-5 text-left">
+                {
+                  this.state.passwordValid.errors.length > 0 ?
+                    <>
+                      {this.state.passwordValid.errors.map((item, key) => (
+                        <div key={key}>
+                          < ShowPasswordMsg
+                            match={item.valid}
+                            text={item.msg}
+                          />
+                          <br />
+                        </div>
+
+                      ))}
+
+
+                    </>
+                    :
+                    null
+                }
+
+              </div>
             </div>
           </div>
         </div>

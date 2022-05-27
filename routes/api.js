@@ -1,5 +1,6 @@
 const express = require("express");
 const axios = require("axios");
+const bcrypt = require("bcrypt");
 
 const router = express.Router();
 
@@ -16,17 +17,18 @@ router.route("/users").get((req, res) => {
     }
   });
 });
+
 router.post("/sign-up", (req, res) => {
   const data = req.body;
-
-  const newUser = new User(data);
-  newUser.save((error) => {
-    if (error) {
-      res.status(500).json({ msg: "Sorry, internal server errors" });
-      return;
-    }
-    return res.json({
-      msg: "Your data has been saved",
+  bcrypt.hash(req.body.password, 10, (err, hash) => {
+    data.password = hash;
+    const newUser = new User(data);
+    newUser.save((error) => {
+      if (error) {
+        res.status(500).json({ msg: `Sorry, internal server errors ${error}` });
+        return;
+      }
+      return res.json({ msg: "Your data has been saved", });
     });
   });
 });
@@ -34,14 +36,16 @@ router.post("/sign-up", (req, res) => {
 router.post("/sign-in", (req, res) => {
   User.findOne({ email: req.body.email })
     .then((data) => {
-      if (!data || data.password !== req.body.password) {
-        res.status(401).json({ error: "Invalid Email or Password" });
-      } else {
-        res.json(data);
-      }
+      bcrypt.compare(req.body.password, data.password, (err, result) => {
+        if (!data || !result) {
+          res.status(401).json({ error: "Invalid Password" });
+        } else {
+          res.json(data);
+        }
+      });
     })
     .catch((error) => {
-      res.json(error);
+      res.status(401).json({ error: "Invalid Email" });
     });
 });
 
@@ -72,16 +76,43 @@ router.post("/forgot", (req, res) => {
     } else {
       //send verification mail
 
-      
+
       res.json(data);
     }
   });
 });
+
+router.put("/dashboard/profile/changepassword/", (req, res) => {
+  User.findOne({ email: req.body.email }).then((data) => {
+    if (!data) {
+      res.status(401).json({ error: "Invalid Email" });
+    } else {
+      bcrypt.compare(req.body.old, data.password,  (err, result) =>{
+        if (result) {
+          bcrypt.hash(req.body.new, 10, function (err, hash) {
+            data.password=hash
+            data.save((err) =>{
+              if (err) {
+                console.log(err)
+                res.status(500).json({error: "Internal server error"})
+              }
+             } )
+            res.json({msg: "New password was saved"})
+
+          });
+        } else {
+          res.status(401).json({ error: "Old password is not correct" });
+        }
+      });
+    }
+  });
+});
+
+
 router.post("/recaptcha", async (req, res, next) => {
   if (!req.body.token) {
     return res.status(400).json({ error: "reCaptcha token is missing" });
   }
-
   try {
     const googleVerifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.token}`;
     const response = await axios.post(googleVerifyUrl);
