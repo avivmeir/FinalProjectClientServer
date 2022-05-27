@@ -83,15 +83,15 @@ router.post("/forgot", (req, res) => {
 });
 
 router.put("/dashboard/profile/changepassword/", (req, res) => {
-  User.findOne({ email: req.body.email }).then((data) => {
-    if (!data) {
+  User.findOne({ email: req.body.email }).then((user) => {
+    if (!user) {
       res.status(401).json({ error: "Invalid Email" });
     } else {
-      bcrypt.compare(req.body.old, data.password,  (err, result) =>{
+      bcrypt.compare(req.body.old, user.password,  (err, result) =>{
         if (result) {
           bcrypt.hash(req.body.new, 10, function (err, hash) {
-            data.password=hash
-            data.save((err) =>{
+            user.password=hash
+            user.save((err) =>{
               if (err) {
                 console.log(err)
                 res.status(500).json({error: "Internal server error"})
