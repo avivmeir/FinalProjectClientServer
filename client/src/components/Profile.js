@@ -36,10 +36,8 @@ class Profile extends Component {
       initialDetails: {},
       fieldsValid: {
         showErrors: false,
-        firstName: true,
-        lastName: true,
-        validUpdate: true,
-        validateChanger: false
+        validateChanger: false,
+        msg: [],
       },
       password: {
         old: "",
@@ -132,11 +130,24 @@ class Profile extends Component {
     if (!this.fieldsAreValid()) {
       return
     }
-    axios.put(`/api/dashboard/profile`, this.state.details).then((res) => {
-      this.setState({ editMode: false });
-      this.getUserDetails()
-    });
+    axios.put(`/api/dashboard/profile`, this.state.details)
+      .then((res) => {
+        this.setState({ editMode: false });
+        this.getUserDetails()
+      })
+      .catch((AxiosError) => {
+        console.log(AxiosError.response);
+        this.setState(prevState => ({
+          fieldsValid: {
+            ...prevState.fieldsValid,
+            showErrors: !this.state.fieldsValid.showErrors,
+            msg: prevState.fieldsValid.msg.concat(AxiosError.response.data.error),
+            validateChanger: true
+          }
+        }))
+      });
   };
+
   updatePassword = (e) => {
     e.preventDefault();
     console.log("update password clicked");
@@ -162,12 +173,14 @@ class Profile extends Component {
   fieldsAreValid() {
     let validFirstName = true
     let validLastName = true
-
+    let errMsg = []
     if (!validName(this.state.details.firstName)) {
       validFirstName = false
+      errMsg.push('First Name is not valid')
     }
     if (!validName(this.state.details.lastName)) {
       validLastName = false
+      errMsg.push('Last Name is not valid')
     }
     let validUpdate = (
       stringIsNotBlank(this.state.details.email)
@@ -177,37 +190,35 @@ class Profile extends Component {
       && (stringIsNotBlank(this.state.details.street) || stringIsBlank(this.state.initialDetails.street))
       && (stringIsNotBlank(this.state.details.zipCode) || stringIsBlank(this.state.initialDetails.zipCode))
     )
+    if (!validUpdate) {
+      errMsg.push('You cannot delete the existing data, you can only update it')
+
+    }
     let validation = validFirstName && validLastName && validUpdate
-    this.setState({
+
+    this.setState(prevState => ({
       fieldsValid: {
-        firstName: validFirstName,
-        lastName: validLastName,
-        validUpdate: validUpdate,
+        ...prevState.fieldsValid,
+        msg: errMsg,
         validateChanger: !validation,
         showErrors: !this.state.fieldsValid.showErrors
       }
-    })
+    }))
 
     return validation
   }
 
   //this is for rerendering the errors popup if needed
   componentDidUpdate() {
-    if (this.state.fieldsValid.validateChanger && !this.state.fieldsValid.showErrors)
-      this.setState({
+    if ((this.state.fieldsValid.validateChanger && !this.state.fieldsValid.showErrors)
+      || (!this.state.fieldsValid.validateChanger && this.state.fieldsValid.showErrors))
+      this.setState(prevState => ({
         fieldsValid: {
-          ...this.state.fieldsValid,
-          showErrors: !this.state.fieldsValid.showErrors,
+          ...prevState.fieldsValid,
+          showErrors: !prevState.fieldsValid.showErrors,
         }
-      })
-      else if (!this.state.fieldsValid.validateChanger && this.state.fieldsValid.showErrors){
-        this.setState({
-          fieldsValid: {
-            ...this.state.fieldsValid,
-            showErrors: !this.state.fieldsValid.showErrors,
-          }
-        })
-      }
+      }))
+
   }
 
   render() {
@@ -399,12 +410,23 @@ class Profile extends Component {
               title="Error"
               body={
                 <>
-                  {this.state.fieldsValid.firstName ? null : <div>First Name is not valid</div>}
-                  {this.state.fieldsValid.lastName ? null : <div>Last Name is not valid</div>}
-                  {this.state.fieldsValid.validUpdate ? null : <div>You cannot delete the existing data, you can only update it</div>}
-
+                  {
+                    this.state.fieldsValid.msg ?
+                      this.state.fieldsValid.msg.map((item, key) => (
+                        <div key={key} className="text-black">{item}</div>
+                      ))
+                      : null
+                  }
                 </>
               }
+              onClose={() => {
+                this.setState(prevState => ({
+                  fieldsValid: {
+                    ...prevState.fieldsValid,
+                    msg: []
+                  }
+                }))
+              }}
             />
             :
             null
