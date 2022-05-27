@@ -12,7 +12,7 @@ const routes = require("./routes/api");
 
 // Step 2
 mongoose.connect(
-  "mongodb+srv://user:webshop123@database.3qzpr.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+  "mongodb+srv://user:webshop123@database.3qzpr.mongodb.net/Test2?retryWrites=true&w=majority",
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,

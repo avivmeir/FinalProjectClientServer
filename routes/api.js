@@ -33,15 +33,37 @@ router.post("/sign-up", (req, res) => {
 router.post("/sign-in", (req, res) => {
   User.findOne({ email: req.body.email })
     .then((data) => {
-      if(!data || data.password !== req.body.password){
-        res.status(401).json({error : "Invalid Email or Password"})
-      }else{
+      if (!data || data.password !== req.body.password) {
+        res.status(401).json({ error: "Invalid Email or Password" });
+      } else {
         res.json(data);
       }
     })
     .catch((error) => {
       res.json(error);
     });
+});
+router.post("/dashboard/profile/", (req, res) => {
+  console.log(req.body.email);
+  User.findOne({ email: req.body.email }).then((data) => {
+    if (!data) {
+      res.status(401).json({ error: "Invalid Email" });
+    } else {
+      console.log("sucess" + res.data);
+      res.json(data);
+    }
+  });
+});
+router.put("/dashboard/profile/", (req, res) => {
+  User.findOneAndUpdate({ email: req.body.email }, req.body).then((data) => {
+    if (!data) {
+      res.status(401).json({ error: "Invalid Email" });
+    } else {
+      console.log("sucess" + data);
+
+      res.json(data);
+    }
+  });
 });
 
 router.post("/recaptcha", async (req, res, next) => {
@@ -57,9 +79,7 @@ router.post("/recaptcha", async (req, res, next) => {
       //Do sign up and store user in database
       return res.json({ success: true });
     } else {
-      return res
-        .status(400)
-        .json({ error: "Invalid Captcha. Try again." });
+      return res.status(400).json({ error: "Invalid Captcha. Try again." });
     }
   } catch (e) {
     return res.status(400).json({ error: "reCaptcha error." });

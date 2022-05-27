@@ -18,6 +18,33 @@ let userSchema = new Schema(
       type: String,
       required: true,
     },
+    phone: {
+      type: String,
+    },
+    country: {
+      type: String,
+    },
+    city: {
+      type: String,
+    },
+    street: {
+      type: String,
+    },
+    zipCode: {
+      type: String,
+    },
+    Spare1: {
+      type: String,
+    },
+    Spare2: {
+      type: String,
+    },
+    Spare3: {
+      type: Number,
+    },
+    Spare4: {
+      type: Number,
+    },
   },
   {
     collection: "users",
