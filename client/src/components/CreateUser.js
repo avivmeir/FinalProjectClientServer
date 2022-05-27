@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import "reactjs-popup/dist/index.css";
 import PopupMessage from "./PopupMessage";
 import RecaptchaWrapper from "./RecaptchaWrapper";
+import { validPassword,validName } from "../Utils"
 
 class CreateUser extends Component {
   state = {
@@ -18,7 +19,7 @@ class CreateUser extends Component {
       succeeded: false,
       showErrors: false,
       validateChanger: false,
-      msg: ''
+      msg: []
     }
   };
   onChangeFirstName = (e) => {
@@ -36,13 +37,50 @@ class CreateUser extends Component {
   onChangeRepeatPassword = (e) => {
     this.setState({ repeatPassowrd: e.target.value });
   };
-  validateFields() {
-    return this.state.validation.captchaVerified &&
-      this.state.password === this.state.repeatPassowrd &&
-      this.state.password.length > 6;
+
+  fieldsAreValid() {
+    let validationResult = true
+    let errMsg = []
+    if (!this.state.validation.captchaVerified) {
+      validationResult = false;
+      errMsg.push("Recaptcha is necessary")
+    }
+    if(!validName(this.state.firstName) || !validName(this.state.lastName)){
+      validationResult = false;
+      errMsg.push("Name is not valid")
+    }
+    if (!validPassword(this.state.password)) {
+      validationResult = false;
+      errMsg.push("Password must be at least 6 characters long and cotain at least 1 number")
+    }
+
+    if (this.state.password !== this.state.repeatPassowrd) {
+      validationResult = false;
+      errMsg.push("Password are not matches")
+    }
+
+    this.setState(prevState => ({
+      validation: {
+        ...prevState.validation,
+        succeeded: validationResult,
+        showErrors: !prevState.validation.showErrors,
+        validateChanger: !validationResult,
+        msg: [...prevState.validation.msg, ...errMsg]
+      }
+    }));
+
+    return validationResult
+
   }
+
   onSubmit = (e) => {
     e.preventDefault();
+    if (!this.fieldsAreValid()) {
+      console.log("not valid")
+      return
+    }
+    console.log("valid")
+
     const userObject = {
       firstName: this.state.firstName,
       lastName: this.state.lastName,
@@ -50,55 +88,41 @@ class CreateUser extends Component {
       password: this.state.password,
       repeatPassword: this.state.repeatPassowrd,
     };
-
-    if (this.validateFields()) {
-      axios
-        .post("/api/sign-up", userObject)
-        .then((res) => {
-          console.log(res.data);
-          this.setState({
-            validation: {
-              ...this.state.validation,
-              succeeded: true, tryValidate: false,
-            }
-          });
-        })
-        .catch((AxiosError) => {
-          console.log(AxiosError.response);
-          this.setState({
-            validation: {
-              ...this.state.validation,
-              succeeded: false,
-              showErrors: !this.state.validation.showErrors,
-              validateChanger: true,
-              msg: AxiosError.response.data.error
-            }
-          });
-        });
-
-    } else {
-
-      this.setState({
-        validation: {
-          ...this.state.validation,
-          succeeded: false,
-          showErrors: !this.state.validation.showErrors,
-          validateChanger: true,
-          msg: ''
-        }
+    axios
+      .post("/api/sign-up", userObject)
+      .then((res) => {
+        console.log(res.data);
+        this.setState(prevState => ({
+          validation: {
+            ...prevState.validation,
+            succeeded: true, tryValidate: false,
+          }
+        }));
+      })
+      .catch((AxiosError) => {
+        console.log(AxiosError.response);
+        this.setState(prevState => ({
+          validation: {
+            ...prevState.validation,
+            succeeded: false,
+            showErrors: !prevState.showErrors,
+            validateChanger: true,
+            msg: [...prevState.validation.msg, AxiosError.response.data.error]
+          }
+        }));
       });
-    }
+
   };
 
   //this is for rerendering the errors popup if needed
   componentDidUpdate() {
     if (this.state.validation.validateChanger && !this.state.validation.showErrors)
-      this.setState({
+      this.setState(prevState => ({
         validation: {
-          ...this.state.validation,
-          showErrors: !this.state.validation.showErrors,
+          ...prevState.validation,
+          showErrors: !prevState.validation.showErrors,
         }
-      })
+      }))
   }
 
   render() {
@@ -178,12 +202,12 @@ class CreateUser extends Component {
                       </div>
                       <div className="form-group d-flex justify-content-center">
                         <RecaptchaWrapper
-                          afterVerify={(isVerified, data) => this.setState({
+                          afterVerify={(isVerified, data) => this.setState(prevState => ({
                             validation: {
-                              ...this.state.validation,
+                              ...prevState.validation,
                               captchaVerified: isVerified
                             }
-                          })}
+                          }))}
                         />
                       </div>
                       <input
@@ -212,7 +236,6 @@ class CreateUser extends Component {
         {this.state.validation.succeeded ?
           <PopupMessage
             title={"Registration Succeed"}
-            p={this.state.validation.validateChanger}
             body={
               <div >
                 <div className="text-black">Hi {this.state.firstName}, Welcome to our shop !!</div>
@@ -230,7 +253,7 @@ class CreateUser extends Component {
             okBtnText="Go to login page"
             closeOnlyWithBtn={true}
             onClose={() => {
-              this.setState({
+              this.setState(prevState => ({
                 firstName: "",
                 lastName: "",
                 email: "",
@@ -238,13 +261,14 @@ class CreateUser extends Component {
                 repeatPassowrd: "",
 
                 validation: {
-                  captchaVerified: this.state.validation.captchaVerified,
+                  ...prevState.validation,
                   succeeded: false,
                   showErrors: false,
-                  validateChanger: false
+                  validateChanger: false,
+                  msg: []
                 }
               }
-              )
+              ))
             }}
 
           />
@@ -252,27 +276,33 @@ class CreateUser extends Component {
           null
         }
         {this.state.validation.showErrors ?
+
           <PopupMessage
             title="Error"
             body={
-              <div className="text-black">
+              <>
                 {
+
                   this.state.validation.msg ?
-                    <div>{this.state.validation.msg}</div>
-                    :
-
-                    !this.state.validation.captchaVerified ?
-                      <div>Recaptcha is necessary</div>
-                      :
-                      <>
-                        <div>Password do not match requirements: </div>
-                        <div>*Password length must be atleast 6 characters </div>
-                        <div>*Password and RepeatPassword should match!</div>
-                      </>
+                    <ul>
+                      {
+                        this.state.validation.msg.map((item, key) => (
+                          <li key={key} className="text-black mt-1">{item}</li>
+                        ))
+                      }
+                    </ul>
+                    : null
                 }
-
-              </div>
+              </>
             }
+            onClose={() => {
+              this.setState(prevState => ({
+                validation: {
+                  ...prevState.validation,
+                  msg: []
+                }
+              }))
+            }}
           />
           :
           null

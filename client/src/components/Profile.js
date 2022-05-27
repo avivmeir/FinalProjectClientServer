@@ -412,10 +412,13 @@ class Profile extends Component {
                 <>
                   {
                     this.state.fieldsValid.msg ?
-                      this.state.fieldsValid.msg.map((item, key) => (
-                        <div key={key} className="text-black">{item}</div>
-                      ))
+                      <ul>
+                        {this.state.fieldsValid.msg.map((item, key) => (
+                          <li key={key} className="text-black mt-1">{item}</li>
+                        ))}
+                      </ul>
                       : null
+
                   }
                 </>
               }
