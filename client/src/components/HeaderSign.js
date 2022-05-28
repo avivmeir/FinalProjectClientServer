@@ -4,28 +4,27 @@ import { Link } from 'react-router-dom'
 class HeaderSign extends Component {
     render() {
         return (
-                <header>
-                    <nav className="navbar navbar-expand-lg navbar-dark bg-gradient-primary">
-                        <span className="navbar-brand mx-2">Webshop | </span>
-                        <div
-                            className="collapse navbar-collapse"
-                            id="navbarSupportedContent"
-                        >
-                            <ul className="navbar-nav ml-auto">
-                                <li className="nav-item ">
-                                    <Link className="nav-link" to={'/sign-up'}>
-                                        Create Account
-                                    </Link>
-                                </li>
-                                <li className="nav-item ">
-                                    <Link className="nav-link" to={'/sign-in'}>
-                                        Login
-                                    </Link>
-                                </li>
-                            </ul>
+            <header>
+                <nav className="navbar navbar-fixed-top navbar-dark bg-gradient-primary">
+                    <div className="container">
+                        <div className="navbar-header ">
+                            <span className="navbar-brand ">Webshop | </span>
                         </div>
-                    </nav>
-                </header>
+                        <div className="nav navbar-header navbar-profile  pull-right">
+                            <span className="navbar-nav ml-auto nav-item mx-4">
+                                <Link className="nav-link" to={'/sign-up'}>
+                                    Create Account
+                                </Link>
+                            </span>
+                            <span className="navbar-nav ml-auto nav-item ">
+                                <Link className="nav-link" to={'/sign-in'}>
+                                    Login
+                                </Link>
+                            </span>
+                        </div>
+                    </div>
+                </nav>
+            </header>
         );
     }
 }

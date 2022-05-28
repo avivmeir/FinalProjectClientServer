@@ -1,6 +1,7 @@
 const express = require("express");
 const axios = require("axios");
 const bcrypt = require("bcrypt");
+var jwt = require('jsonwebtoken');
 
 const router = express.Router();
 
@@ -69,35 +70,23 @@ router.put("/dashboard/profile", (req, res) => {
   });
 });
 
-router.post("/forgot", (req, res) => {
-  User.findOne({ email: req.body.email }).then((data) => {
-    if (!data) {
-      res.status(401).json({ error: "Invalid Email" });
-    } else {
-      //send verification mail
-
-
-      res.json(data);
-    }
-  });
-});
 
 router.put("/dashboard/profile/changepassword/", (req, res) => {
   User.findOne({ email: req.body.email }).then((user) => {
     if (!user) {
       res.status(401).json({ error: "Invalid Email" });
     } else {
-      bcrypt.compare(req.body.old, user.password,  (err, result) =>{
+      bcrypt.compare(req.body.old, user.password, (err, result) => {
         if (result) {
           bcrypt.hash(req.body.new, 10, function (err, hash) {
-            user.password=hash
-            user.save((err) =>{
+            user.password = hash
+            user.save((err) => {
               if (err) {
                 console.log(err)
-                res.status(500).json({error: "Internal server error"})
+                res.status(500).json({ error: "Internal server error" })
               }
-             } )
-            res.json({msg: "New password was saved"})
+            })
+            res.json({ msg: "New password was saved" })
 
           });
         } else {
@@ -127,5 +116,51 @@ router.post("/recaptcha", async (req, res, next) => {
     return res.status(400).json({ error: "reCaptcha error." });
   }
 });
+
+router.post("/forgot", (req, res) => {
+  User.findOne({ email: req.body.email }).then((data) => {
+    if (!data) {
+      res.status(401).json({ error: "Invalid Email" });
+    } else {
+      //jwt signing
+      const expiration = '20m'
+      const token = jwt.sign({ email: req.body.email }, process.env.JWT_SECRET_KEY, { expiresIn: expiration });
+
+      const websiteUrl = process.env.WEB_URL || `http://localhost:3000/sign-in`
+      const verifyUrl = `${websiteUrl}/update-password/${token}`
+
+      console.log(`jwt: ${token} , data: ${req.body.email}`)
+      //send verification mail to: req.body.email , with: verifyUrl
+      res.json({ msg: `We sent a verification link to your mail. The link will be expired in ${expiration}` });
+    }
+  });
+});
+
+
+router.post('/password/token', (req, res) => {
+  token = req.body.token
+  try {
+    var decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    console.log(decoded.email)
+    res.json({ msg: 'verified' , email: decoded.email})
+  } catch (err) {
+    switch (err.name) {
+      case 'TokenExpiredError':
+        console.log(err.message)
+        res.status(401).json({ msg: 'This link is expired' })
+        break;
+      case 'JsonWebTokenError':
+        //signature isnt verified
+        console.log(err.message)
+        res.status(401).json({ msg: 'Unauthorized : This link is not valid !' })
+        break;
+      default:
+        console.log("name :"+err.name)
+        console.log("msg: "+err.message)
+
+        res.status(500).json({ msg: 'Internal server error' })
+    }
+  }
+})
 
 module.exports = router;

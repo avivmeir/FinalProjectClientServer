@@ -10,6 +10,7 @@ import Footer from "./components/Footer";
 import HeaderSign from "./components/HeaderSign";
 import RouteParam from "./components/RouteParam";
 import NotFound404 from "./components/NotFound404";
+import UpdatePassword from "./components/UpdatePassword";
 
 
 class App extends Component {
@@ -50,68 +51,68 @@ class App extends Component {
         <div className="App ">
           {this.getNav()}
           <Routes>
+            <Route path="/update-password/*" element={<UpdatePassword />} />
             <Route
-              exact
-              path="/"
+              exact path="/"
               element={
-                this.state.logged === true ? (
+                this.state.logged === true ?
                   <Navigate to="/dashboard" />
-                ) : (
+                  :
                   <Navigate to="/sign-in" />
-                )
+
               }
             />
             <Route
               path="/sign-in"
               element={
-                this.state.logged === false ? (
+                this.state.logged === false ?
                   <LoginForm handleLogin={this.handleLogin} />
-                ) : (
+                  :
                   <Navigate to="/dashboard" />
-                )
+
               }
             />
             <Route
               path="/sign-up"
               element={
-                this.state.logged === false ? (
-                  <CreateUser  />
-                ) : (
+                this.state.logged === false ?
+                  <CreateUser />
+                  :
                   <Navigate to="/dashboard" />
-                )
+
               }
             />
 
             <Route
               path="/forgot-password"
               element={
-                this.state.logged === false ? (
+                this.state.logged === false ?
                   <ForgotPassword />
-                ) : (
+                  :
                   <Navigate to="/dashboard" />
-                )
+
               }
             />
             <Route
               path="dashboard/*"
               element={
-                this.state.logged === true ? (
+                this.state.logged === true ?
                   <Dashboard
                     handleLogout={this.handleLogout}
                     emailAdress={this.state.email}
                     firstName={this.state.firstName}
                   />
-                ) : (
+                  :
                   <Navigate to="/sign-in" />
-                )
+
               }
             ></Route>
             <Route path="/param/*" element={<RouteParam />}></Route>
-            {this.state.logged ? (
+            {this.state.logged ?
               <Route path="*" exact={true} element={<Dashboard />} />
-            ) : (
+              :
               <Route path="*" exact={true} element={<NotFound404 />} />
-            )}
+            }
           </Routes>
           {this.state.logged === false ? <Footer /> : <div />}
         </div>

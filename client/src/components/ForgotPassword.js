@@ -19,7 +19,7 @@ class ForgotPassword extends Component {
         const emailObject = { email: this.state.email };
         Axios.post(`/api/forgot`, emailObject)
             .then((res) => {
-                this.setState({ msgHeader: 'Verify Email', msg: 'We sent a verification link to your mail' })
+                this.setState({ msgHeader: 'Verify Email', msg:res.data.msg })
             })
             .catch((AxiosError) => {
                 this.setState({ msgHeader: 'Error', msg: AxiosError.response.data.error })

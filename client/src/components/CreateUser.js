@@ -12,7 +12,7 @@ class CreateUser extends Component {
     lastName: "",
     email: "",
     password: "",
-    repeatPassowrd: "",
+    repeatPassword: "",
 
     validation: {
       captchaVerified: false,
@@ -35,7 +35,7 @@ class CreateUser extends Component {
     this.setState({ password: e.target.value });
   };
   onChangeRepeatPassword = (e) => {
-    this.setState({ repeatPassowrd: e.target.value });
+    this.setState({ repeatPassword: e.target.value });
   };
 
   fieldsAreValid() {
@@ -54,7 +54,7 @@ class CreateUser extends Component {
       errMsg.push("Password must be at least 6 characters long and cotain at least 1 number")
     }
 
-    if (this.state.password !== this.state.repeatPassowrd) {
+    if (this.state.password !== this.state.repeatPassword) {
       validationResult = false;
       errMsg.push("Password are not matches")
     }
@@ -86,7 +86,7 @@ class CreateUser extends Component {
       lastName: this.state.lastName,
       email: this.state.email,
       password: this.state.password,
-      repeatPassword: this.state.repeatPassowrd,
+      repeatPassword: this.state.repeatPassword,
     };
     axios
       .post("/api/sign-up", userObject)
@@ -195,7 +195,7 @@ class CreateUser extends Component {
                             className="form-control form-control-user"
                             id="exampleRepeatPassword"
                             placeholder="Repeat Password"
-                            value={this.state.repeatPassowrd}
+                            value={this.state.repeatPassword}
                             onChange={this.onChangeRepeatPassword}
                           />
                         </div>
@@ -256,7 +256,7 @@ class CreateUser extends Component {
                 lastName: "",
                 email: "",
                 password: "",
-                repeatPassowrd: "",
+                repeatPassword: "",
 
                 validation: {
                   ...prevState.validation,
