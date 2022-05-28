@@ -20,7 +20,6 @@ class Profile extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      firstRender: true,
       editMode: false,
 
       details: {
@@ -43,11 +42,7 @@ class Profile extends Component {
         new: "",
         repeat: "",
         errors: []
-
-      },
-      passwordValid: {
-        errors: []
-      },
+      }
     };
   }
   componentDidMount() {
@@ -119,9 +114,33 @@ class Profile extends Component {
       },
     }));
   };
+  onChangeNewPassword = (e) => {
+    const errs = this.passwordsAreValid(e.target.value, this.state.password.repeat)
+    this.setState(prevState => ({
+      password: {
+        ...prevState.password,
+        new: e.target.value,
+        errors: errs
+      }
+    }))
+  }
+  onChangeRepeatPassword = (e) => {
+    const errs = this.passwordsAreValid(this.state.password.new, e.target.value)
+    this.setState(prevState => ({
+      password: {
+        ...prevState.password,
+        repeat: e.target.value,
+        errors: errs
+      }
+    }))
+  }
+
+
   handleEditClick = () => {
     this.setState({ editMode: !this.state.editMode });
   };
+
+
   updateDetails = (e) => {
     e.preventDefault();
     //user cant erase fields , only update
@@ -148,7 +167,9 @@ class Profile extends Component {
 
   updatePassword = (e) => {
     e.preventDefault();
-    if (!this.passwordsAreValid()) {
+    const errorsArr = this.passwordsAreValid()
+    if (! this.allPasswordCorrect(errorsArr)) {
+      this.setState(prevState => ({ password: { ...prevState.password, errors: errorsArr } }))
       return
     }
     const password = {
@@ -160,45 +181,42 @@ class Profile extends Component {
       .put(`/api/dashboard/profile/changepassword/`, password)
       .then((res) => {
         console.log(res)
-        this.setState({
+        this.setState(prevState => ({
           popTitle: 'Update Password',
-          popMsg: [res.data.msg]
-        })
+          popMsg: [res.data.msg],
+          password: { ...prevState.password, errors: errorsArr }
+        }))
         this.getUserDetails()
 
       }).catch((AxiosError) => {
         console.log(AxiosError)
-        this.setState({
+        this.setState(prevState => ({
           popTitle: 'Update Password Failed',
-          popMsg: [AxiosError.response.data.error]
-        })
+          popMsg: [AxiosError.response.data.error],
+          password: { ...prevState.password, errors: errorsArr }
+        }))
       })
 
   };
-  passwordsAreValid = () => {
+  passwordsAreValid = (newPass = this.state.password.new, repeatPass = this.state.password.repeat) => {
     let equals = true
     let size = true
     let withNumbers = true
     let witChars = true
     let errors = []
-    equals = this.state.password.new === this.state.password.repeat
+    equals = newPass === repeatPass
     errors.push({ valid: equals, msg: "Password must match" })
 
 
-    size = this.state.password.new.length >= 6
+    size = newPass.length >= 6
     errors.push({ valid: size, msg: "Password must be at least 6 characters long" })
 
-    withNumbers = /\d/.test(this.state.password.new)
+    withNumbers = /\d/.test(newPass)
     errors.push({ valid: withNumbers, msg: "Password must contain at least one number" })
 
-    witChars = /[a-zA-Z]/.test(this.state.password.new)
+    witChars = /[a-zA-Z]/.test(newPass)
     errors.push({ valid: witChars, msg: "Password must contain at least one character" })
-    this.setState({
-      passwordValid: {
-        errors: errors
-      }
-    })
-    return equals && size && withNumbers && witChars
+    return errors
   }
   getUserDetails = () => {
     const userObject = { email: this.props.emailAdress };
@@ -227,7 +245,7 @@ class Profile extends Component {
       });
   };
 
-  fieldsAreValid() {
+  fieldsAreValid = () => {
     let validFirstName = true
     let validLastName = true
     let errMsg = []
@@ -258,6 +276,16 @@ class Profile extends Component {
     return validation
   }
 
+
+  allPasswordCorrect = (errorsArr) => {
+    if (errorsArr.length===0)
+      return false
+    const length =  errorsArr.reduce((filtered, err) => {
+      filtered += err.valid ? 0 : 1;
+      return filtered;
+    }, 0);
+    return length ===0
+  }
 
   render() {
     //  this.getUserDetails();
@@ -402,14 +430,7 @@ class Profile extends Component {
                     type="password"
                     className="form-control"
                     value={this.state.password.new}
-                    onChange={(e) =>
-                      this.setState(prevState => ({
-                        password: {
-                          ...prevState.password,
-                          new: e.target.value
-                        }
-                      }))
-                    }
+                    onChange={this.onChangeNewPassword}
                   />
                 </div>{" "}
                 <br />
@@ -419,14 +440,7 @@ class Profile extends Component {
                     type="password"
                     className="form-control"
                     value={this.state.password.repeat}
-                    onChange={(e) =>
-                      this.setState(prevState => ({
-                        password: {
-                          ...prevState.password,
-                          repeat: e.target.value
-                        }
-                      }))
-                    }
+                    onChange={this.onChangeRepeatPassword}
                   />
                 </div>{" "}
                 <br />
@@ -434,6 +448,7 @@ class Profile extends Component {
                   className="btn btn-primary profile-button"
                   type="button"
                   onClick={this.updatePassword}
+                  disabled={!this.allPasswordCorrect(this.state.password.errors)}
                 >
                   Change Password
                 </button>
@@ -441,9 +456,9 @@ class Profile extends Component {
 
               <div className="col-md-5 mt-5 text-left">
                 {
-                  this.state.passwordValid.errors.length > 0 ?
+                  this.state.password.errors.length > 0 ?
                     <>
-                      {this.state.passwordValid.errors.map((item, key) => (
+                      {this.state.password.errors.map((item, key) => (
                         <div key={key}>
                           < ShowPasswordMsg
                             match={item.valid}
