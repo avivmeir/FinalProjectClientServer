@@ -134,7 +134,8 @@ router.post("/forgot", (req, res) => {
       res.json({ msg: `We sent a verification link to your mail. The link will be expired in ${expiration}` });
     }
   }).catch(err=>{
-    res.status(500).json({error: err})
+    console.log(err);
+    res.status(500).json({error: 'Internal server error'})
   });
 });
 
