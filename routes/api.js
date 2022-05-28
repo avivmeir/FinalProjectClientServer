@@ -133,6 +133,8 @@ router.post("/forgot", (req, res) => {
       //send verification mail to: req.body.email , with: verifyUrl
       res.json({ msg: `We sent a verification link to your mail. The link will be expired in ${expiration}` });
     }
+  }).catch(err=>{
+    res.status(500).json({error: err})
   });
 });
 
