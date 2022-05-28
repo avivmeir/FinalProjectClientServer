@@ -16,6 +16,9 @@ router.route("/users").get((req, res) => {
     } else {
       res.json(data);
     }
+  }).catch(err=>{
+    console.log(err);
+    res.status(500).json({error: 'Internal server error'})
   });
 });
 
@@ -31,6 +34,9 @@ router.post("/sign-up", (req, res) => {
       }
       return res.json({ msg: "Your data has been saved", });
     });
+  }).catch(err=>{
+    console.log(err);
+    res.status(500).json({error: 'Internal server error'})
   });
 });
 
@@ -57,6 +63,9 @@ router.post("/profile", (req, res) => {
     } else {
       res.json(data);
     }
+  }).catch(err=>{
+    console.log(err);
+    res.status(500).json({error: 'Internal server error'})
   });
 });
 
@@ -67,6 +76,9 @@ router.put("/profile", (req, res) => {
     } else {
       res.json(data);
     }
+  }).catch(err=>{
+    console.log(err);
+    res.status(500).json({error: 'Internal server error'})
   });
 });
 
@@ -94,6 +106,9 @@ router.put("/profile/changepassword", (req, res) => {
         }
       });
     }
+  }).catch(err=>{
+    console.log(err);
+    res.status(500).json({error: 'Internal server error'})
   });
 });
 
@@ -113,7 +128,7 @@ router.post("/recaptcha", async (req, res, next) => {
       return res.status(400).json({ error: "Invalid Captcha. Try again." });
     }
   } catch (e) {
-    return res.status(400).json({ error: "reCaptcha error." });
+    return res.status(503).json({ error: "Service Unavailable : reCaptcha error." });
   }
 });
 
@@ -182,6 +197,9 @@ router.put("/forgot/changepassword", (req, res) => {
         res.json({ msg: "New password was saved" })
       });
     }
+  }).catch(err=>{
+    console.log(err);
+    res.status(500).json({error: 'Internal server error'})
   });
 });
 
