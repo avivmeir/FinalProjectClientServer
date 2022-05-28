@@ -50,7 +50,7 @@ router.post("/sign-in", (req, res) => {
     });
 });
 
-router.post("/dashboard/profile", (req, res) => {
+router.post("/profile", (req, res) => {
   User.findOne({ email: req.body.email }).then((data) => {
     if (!data) {
       res.status(401).json({ error: "Invalid Email" });
@@ -60,7 +60,7 @@ router.post("/dashboard/profile", (req, res) => {
   });
 });
 
-router.put("/dashboard/profile", (req, res) => {
+router.put("/profile", (req, res) => {
   User.findOneAndUpdate({ email: req.body.email }, req.body).then((data) => {
     if (!data) {
       res.status(401).json({ error: "Invalid Email" });
@@ -71,7 +71,7 @@ router.put("/dashboard/profile", (req, res) => {
 });
 
 
-router.put("/dashboard/profile/changepassword/", (req, res) => {
+router.put("/profile/changepassword", (req, res) => {
   User.findOne({ email: req.body.email }).then((user) => {
     if (!user) {
       res.status(401).json({ error: "Invalid Email" });
@@ -142,7 +142,7 @@ router.post('/password/token', (req, res) => {
   try {
     var decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
     console.log(decoded.email)
-    res.json({ msg: 'verified' , email: decoded.email})
+    res.json({ msg: 'verified', email: decoded.email })
   } catch (err) {
     switch (err.name) {
       case 'TokenExpiredError':
@@ -155,12 +155,31 @@ router.post('/password/token', (req, res) => {
         res.status(401).json({ msg: 'Unauthorized : This link is not valid !' })
         break;
       default:
-        console.log("name :"+err.name)
-        console.log("msg: "+err.message)
+        console.log("name :" + err.name)
+        console.log("msg: " + err.message)
 
         res.status(500).json({ msg: 'Internal server error' })
     }
   }
 })
+
+router.put("/forgot/changepassword", (req, res) => {
+  User.findOne({ email: req.body.email }).then((user) => {
+    if (!user) {
+      res.status(401).json({ error: "Invalid Email" });
+    } else {
+      bcrypt.hash(req.body.password, 10, (err, hash) => {
+        user.password = hash;
+        user.save((err) => {
+          if (err) {
+            console.log(err)
+            res.status(500).json({ error: "Sorry, internal server error" })
+          }
+        })
+        res.json({ msg: "New password was saved" })
+      });
+    }
+  });
+});
 
 module.exports = router;

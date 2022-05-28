@@ -147,7 +147,7 @@ class Profile extends Component {
     if (!this.fieldsAreValid()) {
       return
     }
-    axios.put(`/api/dashboard/profile`, this.state.details)
+    axios.put(`/api/profile`, this.state.details)
       .then((res) => {
         this.setState(prevState => ({
           editMode: false,
@@ -178,7 +178,7 @@ class Profile extends Component {
       new: this.state.password.new
     }
     axios
-      .put(`/api/dashboard/profile/changepassword/`, password)
+      .put(`/api/profile/changepassword`, password)
       .then((res) => {
         console.log(res)
         this.setState(prevState => ({
@@ -220,7 +220,7 @@ class Profile extends Component {
   }
   getUserDetails = () => {
     const userObject = { email: this.props.emailAdress };
-    axios.post(`/api/dashboard/profile`, userObject).then((res) => {
+    axios.post(`/api/profile`, userObject).then((res) => {
       this.setState({
         details: {
           firstName: res.data.firstName,

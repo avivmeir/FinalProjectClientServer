@@ -1,23 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import jwt from 'jwt-decode' // import dependency
 import Axios from "axios";
 import PopupMessage from './PopupMessage';
+import { validPassword } from "../Utils"
 
 const UpdatePassword = (props) => {
     const [password, setPassword] = useState('')
     const [repeatedPassword, setRepeated] = useState('')
     const [tokenMsg, setTokenMsg] = useState({ verified: false, msg: '' })
-
+    const [popupMsg, setPopupMsg] = useState({ title: '', text: '' })
     const mounted = useRef();
     useEffect(() => {
         if (!mounted.current) {
             // do componentDidMount logic
             verifyToken()
             mounted.current = true;
-        } else {
-            // do componentDidUpdate logic
-            //verifyToken()
         }
     });
 
@@ -26,8 +22,8 @@ const UpdatePassword = (props) => {
         console.log(`token ${tokenUrl}`)
         Axios.post(`/api/password/token`, { token: tokenUrl })
             .then((res) => {
-                console.log(res)
-                setTokenMsg({ verified: true, msg: res.data.msg })
+                console.log(JSON.stringify(res.data))
+                setTokenMsg({ verified: true, msg: res.data.msg, email: res.data.email })
             })
             .catch((AxiosError) => {
                 console.log(AxiosError)
@@ -37,18 +33,33 @@ const UpdatePassword = (props) => {
 
     const submitForm = (e) => {
         e.preventDefault();
-        //send token for server verify
+        if (password !== repeatedPassword || !validPassword(password)) {
+            setPopupMsg({ title: "Error", text: 'Password must be at least 6 characters long and cotain at least 1 number' })
+            return
+        }
         verifyToken()
+        console.log(`email: ${tokenMsg.email}`)
+        const emailPassword = { email: tokenMsg.email, password: password }
+
+        Axios
+            .put(`/api/forgot/changepassword`, emailPassword)
+            .then((res) => {
+                console.log(res)
+                setPopupMsg({ title: 'Congratulation', text: res.data.msg })
+
+            }).catch((AxiosError) => {
+                console.log(AxiosError)
+                setPopupMsg({ title: "Error", text: AxiosError.response.data.msg })
+            })
+
     }
     // 
     if (!tokenMsg.verified) {
-        let divHeight = window.innerHeight - (window.innerHeight/5.5)
+        let divHeight = window.innerHeight - (window.innerHeight / 5.5)
         return (
-
             <div className="h1 fw-bolder text-black font-bold d-flex align-items-center justify-content-center" style={{ height: divHeight + 'px' }}>
                 {tokenMsg.msg}
             </div>
-
         )
 
     }
@@ -107,6 +118,24 @@ const UpdatePassword = (props) => {
                         </div>
                     </div>
                 </div>
+                {
+                    popupMsg.title && popupMsg.text ?
+                        <PopupMessage
+                            title={popupMsg.title}
+                            body={<div className="text-black my-5 ml-3">{popupMsg.text}</div>}
+                            onClose={() => {
+                                setPopupMsg({ title: '', text: '' })
+                                setPassword('')
+                                setRepeated('')
+                            }}
+                            withOk={popupMsg.title === 'Error' ? false : true}
+                            okBtnText={popupMsg.title === 'Error' ? null : 'Go to login page'}
+                            navigateTo={popupMsg.title === 'Error' ? null : '/sign-in'}
+                            closeOnlyWithBtn={popupMsg.title === 'Error' ? false : true}
+                        />
+                        :
+                        null
+                }
             </div >
         );
     }
