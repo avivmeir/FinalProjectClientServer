@@ -16,28 +16,33 @@ router.route("/users").get((req, res) => {
     } else {
       res.json(data);
     }
-  }).catch(err=>{
-    console.log(err);
-    res.status(500).json({error: 'Internal server error'})
-  });
+  })
 });
 
 router.post("/sign-up", (req, res) => {
   const data = req.body;
-  bcrypt.hash(req.body.password, 10, (err, hash) => {
-    data.password = hash;
-    const newUser = new User(data);
-    newUser.save((error) => {
-      if (error) {
-        res.status(500).json({ msg: `Sorry, internal server errors ${error}` });
-        return;
-      }
-      return res.json({ msg: "Your data has been saved", });
+  User.findOne({ email: req.body.email })
+    .then((user) => {
+      if(!user){
+      bcrypt.hash(req.body.password, 10, (err, hash) => {
+        data.password = hash;
+        const newUser = new User(data);
+        newUser.save((error) => {
+          if (error) {
+            res.status(500).json({ msg: `Sorry, internal server errors ${error}` });
+            return;
+          }
+          return res.json({ msg: "Your data has been saved", });
+        });
+      })
+    }else{
+      res.status(409).json({ msg: "There is a user with this email." })
+    }
+    })
+    .catch(err=>{
+      res.send('error: '+err)
     });
-  }).catch(err=>{
-    console.log(err);
-    res.status(500).json({error: 'Internal server error'})
-  });
+
 });
 
 router.post("/sign-in", (req, res) => {
@@ -63,9 +68,9 @@ router.post("/profile", (req, res) => {
     } else {
       res.json(data);
     }
-  }).catch(err=>{
+  }).catch(err => {
     console.log(err);
-    res.status(500).json({error: 'Internal server error'})
+    res.status(500).json({ error: 'Internal server error' })
   });
 });
 
@@ -76,9 +81,9 @@ router.put("/profile", (req, res) => {
     } else {
       res.json(data);
     }
-  }).catch(err=>{
+  }).catch(err => {
     console.log(err);
-    res.status(500).json({error: 'Internal server error'})
+    res.status(500).json({ error: 'Internal server error' })
   });
 });
 
@@ -106,9 +111,9 @@ router.put("/profile/changepassword", (req, res) => {
         }
       });
     }
-  }).catch(err=>{
+  }).catch(err => {
     console.log(err);
-    res.status(500).json({error: 'Internal server error'})
+    res.status(500).json({ error: 'Internal server error' })
   });
 });
 
@@ -148,9 +153,9 @@ router.post("/forgot", (req, res) => {
       //send verification mail to: req.body.email , with: verifyUrl
       res.json({ msg: `We sent a verification link to your mail. The link will be expired in ${expiration}` });
     }
-  }).catch(err=>{
+  }).catch(err => {
     console.log(err);
-    res.status(500).json({error: 'Internal server error'})
+    res.status(500).json({ error: 'Internal server error' })
   });
 });
 
@@ -197,9 +202,9 @@ router.put("/forgot/changepassword", (req, res) => {
         res.json({ msg: "New password was saved" })
       });
     }
-  }).catch(err=>{
+  }).catch(err => {
     console.log(err);
-    res.status(500).json({error: 'Internal server error'})
+    res.status(500).json({ error: 'Internal server error' })
   });
 });
 

@@ -17,7 +17,7 @@ class CreateUser extends Component {
     validation: {
       captchaVerified: false,
       succeeded: false,
-      showErrors: false,
+      // showErrors: false,
       validateChanger: false,
       msg: []
     }
@@ -62,10 +62,7 @@ class CreateUser extends Component {
     this.setState(prevState => ({
       validation: {
         ...prevState.validation,
-        succeeded: validationResult,
-        showErrors: !prevState.validation.showErrors,
-        validateChanger: !validationResult,
-        msg: [...prevState.validation.msg, ...errMsg]
+        msg: [...errMsg]
       }
     }));
 
@@ -95,7 +92,7 @@ class CreateUser extends Component {
         this.setState(prevState => ({
           validation: {
             ...prevState.validation,
-            succeeded: true, tryValidate: false,
+            msg: ['Succeed']
           }
         }));
       })
@@ -104,27 +101,12 @@ class CreateUser extends Component {
         this.setState(prevState => ({
           validation: {
             ...prevState.validation,
-            succeeded: false,
-            showErrors: !prevState.showErrors,
-            validateChanger: true,
-            msg: [...prevState.validation.msg, AxiosError.response.data.error]
+            msg: [...prevState.validation.msg, AxiosError.response.data.msg]
           }
         }));
       });
 
   };
-
-  //this is for rerendering the errors popup if needed
-  componentDidUpdate() {
-    if (this.state.validation.validateChanger && !this.state.validation.showErrors)
-      this.setState(prevState => ({
-        validation: {
-          ...prevState.validation,
-          showErrors: !prevState.validation.showErrors,
-        }
-      }))
-  }
-
   render() {
     return (
       <div className="wrapper">
@@ -231,50 +213,8 @@ class CreateUser extends Component {
             </div>
           </div>
         </div>
-        {this.state.validation.succeeded ?
-          <PopupMessage
-            title={"Registration Succeed"}
-            body={
-              <div >
-                <div className="text-black">Hi {this.state.firstName}, Welcome to our shop !!</div>
-                <div className="text-black font-weight-bold">We've sent you a verification email, You will be able to login only after approve </div>
-                <div className="text-black  mt-3">Your details:</div>
-                <div className="ml-2 mt-1">
-                  <div >First Name : {this.state.firstName}</div>
-                  <div>Last Name :{this.state.lastName}</div>
-                  <div>Email : {this.state.email}</div>
-                </div>
-              </div>
-            }
-            withOk={true}
-            navigateTo="/sign-in"
-            okBtnText="Go to login page"
-            closeOnlyWithBtn={true}
-            onClose={() => {
-              this.setState(prevState => ({
-                firstName: "",
-                lastName: "",
-                email: "",
-                password: "",
-                repeatPassword: "",
-
-                validation: {
-                  ...prevState.validation,
-                  succeeded: false,
-                  showErrors: false,
-                  validateChanger: false,
-                  msg: []
-                }
-              }
-              ))
-            }}
-
-          />
-          :
-          null
-        }
         {
-          this.state.validation.showErrors && this.state.validation.msg.length > 0 ?
+          this.state.validation.msg.length > 0 && this.state.validation.msg[0] !== 'Succeed' ?
             <PopupMessage
               title="Error"
               body={
@@ -300,7 +240,44 @@ class CreateUser extends Component {
               }}
             />
             :
-            null
+            this.state.validation.msg.length > 0 && this.state.validation.msg[0] === 'Succeed' ?
+              <PopupMessage
+                title="Registration Succeed"
+                body={
+                  <div >
+                    <div className="text-black">Hi {this.state.firstName}, Welcome to our shop !!</div>
+                    <div className="text-black font-weight-bold">We've sent you a verification email, You will be able to login only after approve </div>
+                    <div className="text-black  mt-3">Your details:</div>
+                    <div className="ml-2 mt-1">
+                      <div >First Name : {this.state.firstName}</div>
+                      <div>Last Name :{this.state.lastName}</div>
+                      <div>Email : {this.state.email}</div>
+                    </div>
+                  </div>
+                }
+                withOk={true}
+                navigateTo="/sign-in"
+                okBtnText="Go to login page"
+                closeOnlyWithBtn={true}
+                onClose={() => {
+                  this.setState(prevState => ({
+                    firstName: "",
+                    lastName: "",
+                    email: "",
+                    password: "",
+                    repeatPassword: "",
+
+                    validation: {
+                      ...prevState.validation,
+                      msg: []
+                    }
+                  }
+                  ))
+                }}
+
+              />
+              :
+              null
         }
       </div >
     );
