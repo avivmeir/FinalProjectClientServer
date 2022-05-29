@@ -8,9 +8,9 @@ import ForgotPassword from "./components/ForgotPassword";
 import Dashboard from "./components/Dashboard";
 import Footer from "./components/Footer";
 import HeaderSign from "./components/HeaderSign";
-import RouteParam from "./components/RouteParam";
 import NotFound404 from "./components/NotFound404";
 import UpdatePassword from "./components/UpdatePassword";
+import UpdateEmail from "./components/UpdateEmail";
 
 
 class App extends Component {
@@ -52,6 +52,8 @@ class App extends Component {
           {this.getNav()}
           <Routes>
             <Route path="/update-password/*" element={<UpdatePassword />} />
+            <Route path="/update-email/*" element={<UpdateEmail logoutCB = {this.handleLogout}/>}/>
+
             <Route
               exact path="/"
               element={
@@ -107,7 +109,6 @@ class App extends Component {
 
               }
             ></Route>
-            <Route path="/param/*" element={<RouteParam />}></Route>
             {this.state.logged ?
               <Route path="*" exact={true} element={<Dashboard />} />
               :

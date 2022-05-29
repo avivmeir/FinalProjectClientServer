@@ -18,7 +18,7 @@ class PopupMessage extends Component {
                 open={true}
                 closeOnDocumentClick={!this.props.closeOnlyWithBtn}
                 onClose={() => {
-                    if(this.props.onClose )
+                    if (this.props.onClose)
                         this.props.onClose()
                 }}
             >
@@ -43,7 +43,7 @@ class PopupMessage extends Component {
                                     }
                                     {
                                         this.props.withClose ?
-                                        <Link to={this.props.navigateTo} className="btn btn-primary">{this.props.closeBtnText}</Link>
+                                            <Link to={this.props.navigateTo} className="btn btn-primary">{this.props.closeBtnText}</Link>
                                             :
                                             null
                                     }

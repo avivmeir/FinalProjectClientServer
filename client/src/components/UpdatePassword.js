@@ -18,7 +18,8 @@ const UpdatePassword = (props) => {
     });
 
     const verifyToken = () => {
-        const tokenUrl = window.location.pathname.replace('/update-password/', '');
+        var regEx = new RegExp('/update-password/', "ig");
+        const tokenUrl = window.location.pathname.replace(regEx, '');
         console.log(`token ${tokenUrl}`)
         Axios.post(`/api/password/token`, { token: tokenUrl })
             .then((res) => {
@@ -27,7 +28,7 @@ const UpdatePassword = (props) => {
             })
             .catch((AxiosError) => {
                 console.log(AxiosError)
-                setTokenMsg({ verified: false, msg: AxiosError.response.data.msg })
+                setTokenMsg({ verified: false, msg: AxiosError.response.data.error })
             });
     }
 
@@ -49,7 +50,7 @@ const UpdatePassword = (props) => {
 
             }).catch((AxiosError) => {
                 console.log(AxiosError)
-                setPopupMsg({ title: "Error", text: AxiosError.response.data.msg })
+                setPopupMsg({ title: "Error", text: AxiosError.response.data.error })
             })
 
     }
@@ -57,7 +58,7 @@ const UpdatePassword = (props) => {
     if (!tokenMsg.verified) {
         let divHeight = window.innerHeight - (window.innerHeight / 5.5)
         return (
-            <div className="h1 fw-bolder text-black font-bold d-flex align-items-center justify-content-center" style={{ height: divHeight + 'px' }}>
+            <div className="h1 m-2 fw-bolder text-black font-bold d-flex align-items-center justify-content-center" style={{ height: divHeight + 'px' }}>
                 {tokenMsg.msg}
             </div>
         )
@@ -67,7 +68,7 @@ const UpdatePassword = (props) => {
         return (
             <div className="wrapper">
                 <div className="container">
-                    <div className="card o-hidden border-0 shadow-lg my-5">
+                    <div className="card o-hidden border-0 shadow-lg mt-5">
                         <div className="card-body p-0">
                             <div className="row">
                                 <div className="col-lg-5 d-none d-lg-block bg-register-image"></div>

@@ -27,11 +27,12 @@ class Profile extends Component {
         lastName: "",
         phone: "",
         country: "",
-        email: "",
+        email: this.props.emailAdress,
         city: "",
         street: "",
         zipCode: ""
       },
+      newEmail: this.props.emailAdress,
       initialDetails: {},
 
       popTitle: '',
@@ -46,7 +47,6 @@ class Profile extends Component {
     };
   }
   componentDidMount() {
-    console.log("mounted")
     this.getUserDetails()
   }
 
@@ -82,13 +82,8 @@ class Profile extends Component {
       },
     }));
   };
-  onChangeEmail = (e) => {
-    this.setState((prevState) => ({
-      details: {
-        ...prevState.details,
-        email: e.target.value,
-      },
-    }));
+  onChangeNewEmail = (e) => {
+    this.setState({ newEmail: e.target.value });
   };
   onChangeCity = (e) => {
     this.setState((prevState) => ({
@@ -147,28 +142,53 @@ class Profile extends Component {
     if (!this.fieldsAreValid()) {
       return
     }
-    axios.put(`/api/profile`, this.state.details)
-      .then((res) => {
-        this.setState(prevState => ({
-          editMode: false,
-          popTitle: 'Successful Update',
-          popMsg: ['The details have been updated successfully']
-        }));
-        this.getUserDetails()
-      })
-      .catch((AxiosError) => {
-        console.log(AxiosError.response);
-        this.setState(prevState => ({
-          popTitle: 'Error',
-          popMsg: [...prevState.popMsg, (AxiosError.response.data.error)]
-        }))
-      });
+
+    if (this.state.newEmail !== this.props.emailAdress) {
+      //update with new email
+      const user = { newEmail: this.state.newEmail, details: this.state.details }
+      axios.put(`/api/profile/updatemail`, user)
+        .then((res) => {
+          this.setState(prevState => ({
+            editMode: false,
+            popTitle: 'Successful Update - Updating Email',
+            popMsg: [res.data.msg]
+          }));
+          //this.getUserDetails()
+        })
+        .catch((AxiosError) => {
+          console.log(AxiosError.response);
+          this.setState(prevState => ({
+            popTitle: 'Error',
+            popMsg: [...prevState.popMsg, (AxiosError.response.data.error)]
+          }))
+        });
+
+    } else {
+      //update with no new email
+      axios.put(`/api/profile`, this.state.details)
+        .then((res) => {
+          this.setState(prevState => ({
+            editMode: false,
+            popTitle: 'Successful Update',
+            popMsg: ['The details have been updated successfully']
+          }));
+          this.getUserDetails()
+        })
+        .catch((AxiosError) => {
+          console.log(AxiosError.response);
+          this.setState(prevState => ({
+            popTitle: 'Error',
+            popMsg: [...prevState.popMsg, (AxiosError.response.data.error)]
+          }))
+        });
+    }
+
   };
 
   updatePassword = (e) => {
     e.preventDefault();
     const errorsArr = this.passwordsAreValid()
-    if (! this.allPasswordCorrect(errorsArr)) {
+    if (!this.allPasswordCorrect(errorsArr)) {
       this.setState(prevState => ({ password: { ...prevState.password, errors: errorsArr } }))
       return
     }
@@ -231,7 +251,8 @@ class Profile extends Component {
           city: res.data.city || "",
           street: res.data.street || "",
           zipCode: res.data.zipCode || "",
-        }
+        },
+
       });
       this.setState({ initialDetails: { ...res.data } })
     })
@@ -239,7 +260,7 @@ class Profile extends Component {
         console.log(AxiosError.response);
         this.setState(prevState => ({
           popTitle: 'Error',
-          popMsg: [...prevState.popMsg, (AxiosError.response.data.error)]
+          popMsg: [(AxiosError.response.data.error)]
 
         }))
       });
@@ -258,7 +279,7 @@ class Profile extends Component {
       errMsg.push('Last Name is not valid')
     }
     let validUpdate = (
-      stringIsNotBlank(this.state.details.email)
+      stringIsNotBlank(this.state.newEmail)
       && (stringIsNotBlank(this.state.details.phone) || stringIsBlank(this.state.initialDetails.phone))
       && (stringIsNotBlank(this.state.details.country) || stringIsBlank(this.state.initialDetails.country))
       && (stringIsNotBlank(this.state.details.city) || stringIsBlank(this.state.initialDetails.city))
@@ -278,17 +299,16 @@ class Profile extends Component {
 
 
   allPasswordCorrect = (errorsArr) => {
-    if (errorsArr.length===0)
+    if (errorsArr.length === 0)
       return false
-    const length =  errorsArr.reduce((filtered, err) => {
+    const length = errorsArr.reduce((filtered, err) => {
       filtered += err.valid ? 0 : 1;
       return filtered;
     }, 0);
-    return length ===0
+    return length === 0
   }
 
   render() {
-    //  this.getUserDetails();
     return (
       <div className="wrapper">
         <div className="row">
@@ -353,8 +373,8 @@ class Profile extends Component {
                       type="email"
                       className="form-control"
                       disabled={!this.state.editMode}
-                      value={this.state.details.email}
-                      onChange={this.onChangeEmail}
+                      value={this.state.newEmail}
+                      onChange={this.onChangeNewEmail}
                     />
                   </div>
                   <div className="col-md-12">
@@ -406,52 +426,58 @@ class Profile extends Component {
             <h4 className="text-black">Change Password</h4>
             <div className="row">
               <div className="col-md-6">
-                <div className="col-md-12 mt-4">
-                  <label className="labels">Old Password</label>
-                  <input
-                    type="password"
-                    className="form-control"
-                    value={this.state.password.old}
-                    onChange={(e) => {
-                      this.setState(prevState => ({
-                        password: {
-                          ...prevState.password,
-                          old: e.target.value
-                        }
-                      }))
-                    }
-                    }
-                  />
-                </div>{" "}
-                <br />
-                <div className="col-md-12">
-                  <label className="labels">New Password</label>
-                  <input
-                    type="password"
-                    className="form-control"
-                    value={this.state.password.new}
-                    onChange={this.onChangeNewPassword}
-                  />
-                </div>{" "}
-                <br />
-                <div className="col-md-12">
-                  <label className="labels">Reapeat Password</label>
-                  <input
-                    type="password"
-                    className="form-control"
-                    value={this.state.password.repeat}
-                    onChange={this.onChangeRepeatPassword}
-                  />
-                </div>{" "}
-                <br />
-                <button
-                  className="btn btn-primary profile-button"
-                  type="button"
-                  onClick={this.updatePassword}
-                  disabled={!this.allPasswordCorrect(this.state.password.errors)}
-                >
-                  Change Password
-                </button>
+                <form>
+                  <div className="col-md-12 mt-4">
+                    <label className="labels">Old Password</label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      autoComplete="on"
+                      value={this.state.password.old}
+                      onChange={(e) => {
+                        this.setState(prevState => ({
+                          password: {
+                            ...prevState.password,
+                            old: e.target.value
+                          }
+                        }))
+                      }
+                      }
+                    />
+                  </div>{" "}
+                  <br />
+                  <div className="col-md-12">
+                    <label className="labels">New Password</label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      value={this.state.password.new}
+                      onChange={this.onChangeNewPassword}
+                      autoComplete="on"
+                    />
+                  </div>{" "}
+                  <br />
+                  <div className="col-md-12">
+                    <label className="labels">Reapeat Password</label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      autoComplete="on"
+                      value={this.state.password.repeat}
+                      onChange={this.onChangeRepeatPassword}
+                    />
+                  </div>{" "}
+                  <br />
+                  <button
+                    className="btn btn-primary profile-button"
+                    type="button"
+                    onClick={this.updatePassword}
+                    disabled={!this.allPasswordCorrect(this.state.password.errors)}
+                  >
+                    Change Password
+                  </button>
+                </form>
+
               </div>
 
               <div className="col-md-5 mt-5 text-left">
@@ -495,8 +521,13 @@ class Profile extends Component {
                 </>
               }
               onClose={() => {
-                this.setState({ popMsg: '', popTitle: '' })
+                let emailAdd = this.state.popTitle === 'Error' ? this.state.details.email : this.state.newEmail
+                this.setState({ popMsg: '', popTitle: '', newEmail: emailAdd })
+                this.getUserDetails()
               }}
+              closeOnlyWithBtn={this.state.popTitle === 'Successful Update - Updating Email' ?
+                true : false}
+
             />
             :
             null

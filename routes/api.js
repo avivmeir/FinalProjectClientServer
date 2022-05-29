@@ -7,6 +7,8 @@ const router = express.Router();
 
 const User = require("../models/user-schema");
 
+const websiteUrl = process.env.WEB_URL || `http://localhost:3000/sign-in`
+
 // Routes
 //Users
 router.route("/users").get((req, res) => {
@@ -23,24 +25,24 @@ router.post("/sign-up", (req, res) => {
   const data = req.body;
   User.findOne({ email: req.body.email })
     .then((user) => {
-      if(!user){
-      bcrypt.hash(req.body.password, 10, (err, hash) => {
-        data.password = hash;
-        const newUser = new User(data);
-        newUser.save((error) => {
-          if (error) {
-            res.status(500).json({ msg: `Sorry, internal server errors ${error}` });
-            return;
-          }
-          return res.json({ msg: "Your data has been saved", });
-        });
-      })
-    }else{
-      res.status(409).json({ msg: "There is a user with this email." })
-    }
+      if (!user) {
+        bcrypt.hash(req.body.password, 10, (err, hash) => {
+          data.password = hash;
+          const newUser = new User(data);
+          newUser.save((error) => {
+            if (error) {
+              res.status(500).json({ msg: `Sorry, internal server errors ${error}` });
+              return;
+            }
+            return res.json({ msg: "Your data has been saved", });
+          });
+        })
+      } else {
+        res.status(409).json({ msg: "There is a user with this email." })
+      }
     })
-    .catch(err=>{
-      res.send('error: '+err)
+    .catch(err => {
+      res.send('error: ' + err)
     });
 
 });
@@ -86,6 +88,73 @@ router.put("/profile", (req, res) => {
     res.status(500).json({ error: 'Internal server error' })
   });
 });
+
+
+router.put("/profile/updatemail", (req, res) => {
+  User.findOne({ email: req.body.newEmail }).then((data) => {
+    if (!data) {
+      let emailObj = { oldEmail: req.body.details.email, newEmail: req.body.newEmail }
+
+      User.findOneAndUpdate({ email: emailObj.oldEmail }, req.body.details).then((user) => {
+        if (!user) {
+          res.status(401).json({ error: "Invalid Email" });
+        } else {
+          // ------------generate jwt-----------
+          const expiration = '30m'
+          const token = jwt.sign(emailObj, process.env.JWT_SECRET_KEY, { expiresIn: expiration });
+          const verifyUrl = `${websiteUrl}/update-email/${token}`
+          console.log(`jwt: ${token} , data: ${JSON.stringify(emailObj)}`)
+          //send verification mail to: req.body.email , with: verifyUrl
+
+          res.json({ msg: `In order to update your email we sent a verification link to your current mail. The link will be expired in ${expiration}` });
+        }
+      }).catch(err => {
+        console.log(err);
+        res.status(500).json({ error: 'Internal server error' })
+      });
+    }
+    else {
+      res.status(409).json({ msg: "There is a user with this email." })
+    }
+  })
+
+});
+
+router.put("/email/token", (req, res) => {
+  token = req.body.token
+  try {
+    var decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    User.findOneAndUpdate({ email: decoded.oldEmail }, {email : decoded.newEmail}).then((user) => {
+      if (!user) {
+        res.status(401).json({ error: "Invalid Email" });
+      } else {
+        res.json({ msg: `Your Email was successfully updated !!`,
+         oldEmail: decoded.oldEmail, newEmail: decoded.newEmail })
+      }
+    }).catch(err => {
+      console.log(err);
+      res.status(500).json({ error: 'Internal server error' })
+    });
+  } catch (err) {
+    switch (err.name) {
+      case 'TokenExpiredError':
+        console.log(err.message)
+        res.status(401).json({ error: 'This link is expired' })
+        break;
+      case 'JsonWebTokenError':
+        //signature isnt verified
+        console.log(err.message)
+        res.status(401).json({ error: 'Unauthorized : This link is not valid !' })
+        break;
+      default:
+        console.log("name :" + err.name)
+        console.log("msg: " + err.message)
+
+        res.status(500).json({ error: 'Internal server error' })
+    }
+  }
+});
+
 
 
 router.put("/profile/changepassword", (req, res) => {
@@ -145,8 +214,6 @@ router.post("/forgot", (req, res) => {
       //jwt signing
       const expiration = '20m'
       const token = jwt.sign({ email: req.body.email }, process.env.JWT_SECRET_KEY, { expiresIn: expiration });
-
-      const websiteUrl = process.env.WEB_URL || `http://localhost:3000/sign-in`
       const verifyUrl = `${websiteUrl}/update-password/${token}`
 
       console.log(`jwt: ${token} , data: ${req.body.email}`)
@@ -170,18 +237,18 @@ router.post('/password/token', (req, res) => {
     switch (err.name) {
       case 'TokenExpiredError':
         console.log(err.message)
-        res.status(401).json({ msg: 'This link is expired' })
+        res.status(401).json({ error: 'This link is expired' })
         break;
       case 'JsonWebTokenError':
         //signature isnt verified
         console.log(err.message)
-        res.status(401).json({ msg: 'Unauthorized : This link is not valid !' })
+        res.status(401).json({ error: 'Unauthorized : This link is not valid !' })
         break;
       default:
         console.log("name :" + err.name)
         console.log("msg: " + err.message)
 
-        res.status(500).json({ msg: 'Internal server error' })
+        res.status(500).json({ error: 'Internal server error' })
     }
   }
 })
