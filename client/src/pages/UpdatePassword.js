@@ -163,6 +163,7 @@ const UpdatePassword = (props) => {
                             okBtnText={popupMsg.title === 'Error' ? null : 'Go to login page'}
                             navigateTo={popupMsg.title === 'Error' ? null : '/sign-in'}
                             closeOnlyWithBtn={popupMsg.title === 'Error' ? false : true}
+                            status={popupMsg.title === 'Error' ? 'error' : 'success'}
                         />
                         :
                         null

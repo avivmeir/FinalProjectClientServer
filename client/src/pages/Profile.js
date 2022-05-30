@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
-import { stringIsNotBlank, stringIsBlank, validName, getPasswordErrors,allPasswordCorrect} from "../utility/Utils"
+import { stringIsNotBlank, stringIsBlank, validName, getPasswordErrors, allPasswordCorrect } from "../utility/Utils"
 import PopupMessage from "../components/PopupMessage";
 import { ShowPasswordMsg } from "../components/ShowPasswordMsg";
 
@@ -25,6 +25,7 @@ class Profile extends Component {
 
       popTitle: '',
       popMsg: [],
+      msgStatus: '',
 
       password: {
         old: "",
@@ -139,7 +140,8 @@ class Profile extends Component {
           this.setState(prevState => ({
             editMode: false,
             popTitle: 'Successful Update - Updating Email',
-            popMsg: [res.data.msg]
+            popMsg: [res.data.msg],
+            msgStatus: 'info'
           }));
           //this.getUserDetails()
         })
@@ -147,7 +149,8 @@ class Profile extends Component {
           console.log(AxiosError.response);
           this.setState(prevState => ({
             popTitle: 'Error',
-            popMsg: [...prevState.popMsg, (AxiosError.response.data.error)]
+            popMsg: [...prevState.popMsg, (AxiosError.response.data.error)],
+            msgStatus: 'error'
           }))
         });
 
@@ -158,7 +161,8 @@ class Profile extends Component {
           this.setState(prevState => ({
             editMode: false,
             popTitle: 'Successful Update',
-            popMsg: ['The details have been updated successfully']
+            popMsg: ['The details have been updated successfully'],
+            msgStatus: 'success'
           }));
           this.getUserDetails()
         })
@@ -166,7 +170,8 @@ class Profile extends Component {
           console.log(AxiosError.response);
           this.setState(prevState => ({
             popTitle: 'Error',
-            popMsg: [...prevState.popMsg, (AxiosError.response.data.error)]
+            popMsg: [(AxiosError.response.data.error)],
+            msgStatus: 'error'
           }))
         });
     }
@@ -175,7 +180,7 @@ class Profile extends Component {
 
   updatePassword = (e) => {
     e.preventDefault();
-    const errorsArr = getPasswordErrors(this.state.password.new,this.state.password.repeat)
+    const errorsArr = getPasswordErrors(this.state.password.new, this.state.password.repeat)
     if (!allPasswordCorrect(errorsArr)) {
       this.setState(prevState => ({ password: { ...prevState.password, errors: errorsArr } }))
       return
@@ -192,7 +197,8 @@ class Profile extends Component {
         this.setState(prevState => ({
           popTitle: 'Update Password',
           popMsg: [res.data.msg],
-          password: { ...prevState.password, errors: errorsArr }
+          password: { ...prevState.password, errors: errorsArr },
+          msgStatus: 'success'
         }))
         this.getUserDetails()
 
@@ -201,12 +207,13 @@ class Profile extends Component {
         this.setState(prevState => ({
           popTitle: 'Update Password Failed',
           popMsg: [AxiosError.response.data.error],
-          password: { ...prevState.password, errors: errorsArr }
+          password: { ...prevState.password, errors: errorsArr },
+          msgStatus: 'error'
         }))
       })
 
   };
-  
+
   getUserDetails = () => {
     const userObject = { email: this.props.emailAdress };
     axios.post(`/api/profile`, userObject).then((res) => {
@@ -229,7 +236,8 @@ class Profile extends Component {
         console.log(AxiosError.response);
         this.setState(prevState => ({
           popTitle: 'Error',
-          popMsg: [(AxiosError.response.data.error)]
+          popMsg: [(AxiosError.response.data.error)],
+          msgStatus: 'error'
 
         }))
       });
@@ -261,7 +269,7 @@ class Profile extends Component {
     }
     let validation = validFirstName && validLastName && validUpdate
 
-    this.setState({ popTitle: 'Error', popMsg: errMsg })
+    this.setState({ popTitle: 'Error', popMsg: errMsg, msgStatus: 'error' })
 
     return validation
   }
@@ -464,6 +472,7 @@ class Profile extends Component {
         </div>
         {
           this.state.popTitle && this.state.popMsg.length > 0 ?
+
             <PopupMessage
               title={this.state.popTitle}
               body={
@@ -479,11 +488,12 @@ class Profile extends Component {
               }
               onClose={() => {
                 let emailAdd = this.state.popTitle === 'Error' ? this.state.details.email : this.state.newEmail
-                this.setState({ popMsg: '', popTitle: '', newEmail: emailAdd })
+                this.setState({ popMsg: '', popTitle: '', msgStatus: '', newEmail: emailAdd })
                 this.getUserDetails()
               }}
               closeOnlyWithBtn={this.state.popTitle === 'Successful Update - Updating Email' ?
                 true : false}
+              status={this.state.msgStatus}
 
             />
             :

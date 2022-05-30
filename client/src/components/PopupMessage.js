@@ -2,12 +2,42 @@ import React, { Component } from 'react';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import { Link } from "react-router-dom";
-
+import { ReactComponent as ErrorSvg } from "../app_photos/pop-error.svg";
+import { ReactComponent as SuccessSvg } from "../app_photos/pop-success.svg";
+import { ReactComponent as InfoSvg } from "../app_photos/pop-info.svg";
 
 class PopupMessage extends Component {
 
     state = {
         navigate: false
+    }
+    getIcon = () => {
+        if (!this.props.status) {
+            return null
+        }
+        switch (this.props.status) {
+            case 'success':
+                return (
+                    <div className="col-lg-1 mx-auto d-none d-lg-block  float-right ">
+                        <SuccessSvg width="48" height="48" />
+                    </div>
+                )
+                break;
+            case 'error':
+                return (
+                    <div className="col-lg-1 mx-auto d-none d-lg-block  float-right ">
+                        <ErrorSvg width="48" height="48" />
+                    </div>
+                )
+            case 'info':
+                return (
+                    <div className="col-lg-1 mx-auto d-none d-lg-block  float-right ">
+                        <InfoSvg width="48" height="48" />
+                    </div>
+                )
+            default:
+                return null;
+        }
     }
 
     render() {
@@ -24,7 +54,7 @@ class PopupMessage extends Component {
             >
 
                 {close => (
-                    <div className="p-0" id="exampleModal" tableindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div className="p-0 m-0" id="exampleModal" tableindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div className="modal-dialog modal-lg m-0 p-0">
                             <div className="modal-content  m-0 p-0">
                                 <div className="modal-header">
@@ -32,7 +62,15 @@ class PopupMessage extends Component {
                                     <button className="btn-close" onClick={close} data-bs-dismiss="modal" aria-label="Close" />
                                 </div>
                                 <div className="modal-body">
-                                    {this.props.body}
+                                    <div className="row align-items-center">
+                                        <div className="col-lg-10 ">
+                                            {this.props.body}
+                                        </div>
+                                        {
+                                            this.getIcon()
+                                        }
+
+                                    </div>
                                 </div>
                                 <div className="modal-footer">
                                     {

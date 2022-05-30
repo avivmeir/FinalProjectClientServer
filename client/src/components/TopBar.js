@@ -23,7 +23,7 @@ class TopBar extends Component {
                 {this.props.firstName} &nbsp; &nbsp;
                 <UserSvg width="48" height="48" />
               </Dropdown.Toggle>
-              <Dropdown.Menu>
+              <Dropdown.Menu style={{ margin: 0 }}>
                 <Dropdown.Item as={Link} to="/dashboard/profile">
                   <ProfileSvg width="12" height="12" />
                   &nbsp; Profile

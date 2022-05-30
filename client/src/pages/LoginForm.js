@@ -152,6 +152,7 @@ class LoginForm extends Component {
               onClose={()=>{
                 this.setState({errMsg:''})
               }}
+              status='error'
             />
             :
             null

@@ -230,6 +230,7 @@ class CreateUser extends Component {
                   }
                 </>
               }
+              status='error'
               onClose={() => {
                 this.setState(prevState => ({
                   validation: {
@@ -259,6 +260,7 @@ class CreateUser extends Component {
                 navigateTo="/sign-in"
                 okBtnText="Go to login page"
                 closeOnlyWithBtn={true}
+                status='info'
                 onClose={() => {
                   this.setState(prevState => ({
                     firstName: "",

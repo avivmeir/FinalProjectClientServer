@@ -19,7 +19,7 @@ class ForgotPassword extends Component {
         const emailObject = { email: this.state.email };
         Axios.post(`/api/forgot`, emailObject)
             .then((res) => {
-                this.setState({ msgHeader: 'Verify Email', msg:res.data.msg })
+                this.setState({ msgHeader: 'Verify Email', msg: res.data.msg })
             })
             .catch((AxiosError) => {
                 this.setState({ msgHeader: 'Error', msg: AxiosError.response.data.error })
@@ -91,8 +91,11 @@ class ForgotPassword extends Component {
                                 <div className="text-black">{this.state.msg}</div>
                             }
                             onClose={() => {
-                                this.setState({msg:'',msgHeader:''})
+                                this.setState({ msg: '', msgHeader: '' })
                             }}
+                            closeOnlyWithBtn={this.state.msgHeader === 'Error' ? false : true}
+
+                            status={this.state.msgHeader === 'Error' ? 'error' : 'info'}
                         />
                         :
                         null

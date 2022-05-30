@@ -101,7 +101,7 @@ router.put("/profile/updatemail", (req, res) => {
         } else {
           // ------------generate jwt-----------
           const expiration = '30m'
-          const token = jwt.sign(emailObj, process.env.JWT_SECRET_KEY, { expiresIn: expiration });
+          const token = jwt.sign(emailObj, process.env.JWT_SECRET_KEY_EMAIL, { expiresIn: expiration });
           const verifyUrl = `${websiteUrl}/update-email/${token}`
           console.log(`jwt: ${token} , data: ${JSON.stringify(emailObj)}`)
           //send verification mail to: req.body.email , with: verifyUrl
@@ -123,7 +123,7 @@ router.put("/profile/updatemail", (req, res) => {
 router.put("/email/token", (req, res) => {
   token = req.body.token
   try {
-    var decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    var decoded = jwt.verify(token, process.env.JWT_SECRET_KEY_EMAIL);
     User.findOneAndUpdate({ email: decoded.oldEmail }, { email: decoded.newEmail }).then((user) => {
       if (!user) {
         res.status(401).json({ error: "Invalid Email" });
@@ -215,7 +215,7 @@ router.post("/forgot", (req, res) => {
     } else {
       //jwt signing
       const expiration = '20m'
-      const token = jwt.sign({ email: req.body.email }, process.env.JWT_SECRET_KEY, { expiresIn: expiration });
+      const token = jwt.sign({ email: req.body.email }, process.env.JWT_SECRET_KEY_PASSWORD, { expiresIn: expiration });
       const verifyUrl = `${websiteUrl}/update-password/${token}`
 
       console.log(`jwt: ${token} , data: ${req.body.email}`)
@@ -234,7 +234,7 @@ router.post("/forgot", (req, res) => {
 router.post('/forgot/token', (req, res) => {
   token = req.body.token
   try {
-    var decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    var decoded = jwt.verify(token, process.env.JWT_SECRET_KEY_PASSWORD);
     console.log(decoded.email)
 
     res.json({ msg: 'verified', email: decoded.email })
