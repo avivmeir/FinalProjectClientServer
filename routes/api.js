@@ -124,12 +124,14 @@ router.put("/email/token", (req, res) => {
   token = req.body.token
   try {
     var decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    User.findOneAndUpdate({ email: decoded.oldEmail }, {email : decoded.newEmail}).then((user) => {
+    User.findOneAndUpdate({ email: decoded.oldEmail }, { email: decoded.newEmail }).then((user) => {
       if (!user) {
         res.status(401).json({ error: "Invalid Email" });
       } else {
-        res.json({ msg: `Your Email was successfully updated !!`,
-         oldEmail: decoded.oldEmail, newEmail: decoded.newEmail })
+        res.json({
+          msg: `Your Email was successfully updated !!`,
+          oldEmail: decoded.oldEmail, newEmail: decoded.newEmail
+        })
       }
     }).catch(err => {
       console.log(err);
@@ -217,7 +219,9 @@ router.post("/forgot", (req, res) => {
       const verifyUrl = `${websiteUrl}/update-password/${token}`
 
       console.log(`jwt: ${token} , data: ${req.body.email}`)
+
       //send verification mail to: req.body.email , with: verifyUrl
+
       res.json({ msg: `We sent a verification link to your mail. The link will be expired in ${expiration}` });
     }
   }).catch(err => {
@@ -227,11 +231,12 @@ router.post("/forgot", (req, res) => {
 });
 
 
-router.post('/password/token', (req, res) => {
+router.post('/forgot/token', (req, res) => {
   token = req.body.token
   try {
     var decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
     console.log(decoded.email)
+
     res.json({ msg: 'verified', email: decoded.email })
   } catch (err) {
     switch (err.name) {
@@ -266,6 +271,9 @@ router.put("/forgot/changepassword", (req, res) => {
             res.status(500).json({ error: "Sorry, internal server error" })
           }
         })
+
+        // send confirmation email about password was changed
+
         res.json({ msg: "New password was saved" })
       });
     }

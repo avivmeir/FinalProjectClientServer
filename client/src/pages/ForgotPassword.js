@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import RecaptchaWrapper from './RecaptchaWrapper';
+import RecaptchaWrapper from '../components/RecaptchaWrapper';
 import Axios from "axios";
-import PopupMessage from './PopupMessage';
+import PopupMessage from '../components/PopupMessage';
 
 class ForgotPassword extends Component {
     state = {

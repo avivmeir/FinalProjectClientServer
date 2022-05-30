@@ -2,15 +2,15 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import React, { Component } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import CreateUser from "./components/CreateUser";
-import LoginForm from "./components/LoginForm";
-import ForgotPassword from "./components/ForgotPassword";
-import Dashboard from "./components/Dashboard";
+import CreateUser from "./pages/CreateUser";
+import LoginForm from "./pages/LoginForm";
+import ForgotPassword from "./pages/ForgotPassword";
+import Dashboard from "./pages/Dashboard";
 import Footer from "./components/Footer";
 import HeaderSign from "./components/HeaderSign";
-import NotFound404 from "./components/NotFound404";
-import UpdatePassword from "./components/UpdatePassword";
-import UpdateEmail from "./components/UpdateEmail";
+import NotFound404 from "./pages/NotFound404";
+import UpdatePassword from "./pages/UpdatePassword";
+import UpdateEmail from "./pages/UpdateEmail";
 
 
 class App extends Component {

@@ -1,13 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Axios from "axios";
-import PopupMessage from './PopupMessage';
-import { validPassword } from "../Utils"
+import PopupMessage from '../components/PopupMessage';
+import { validPassword, getPasswordErrors,allPasswordCorrect } from "../utility/Utils"
+import { ShowPasswordMsg } from '../components/ShowPasswordMsg';
 
 const UpdatePassword = (props) => {
     const [password, setPassword] = useState('')
     const [repeatedPassword, setRepeated] = useState('')
     const [tokenMsg, setTokenMsg] = useState({ verified: false, msg: '' })
     const [popupMsg, setPopupMsg] = useState({ title: '', text: '' })
+    const [passwordErros, setPasswordErros] = useState([])
     const mounted = useRef();
     useEffect(() => {
         if (!mounted.current) {
@@ -21,7 +23,7 @@ const UpdatePassword = (props) => {
         var regEx = new RegExp('/update-password/', "ig");
         const tokenUrl = window.location.pathname.replace(regEx, '');
         console.log(`token ${tokenUrl}`)
-        Axios.post(`/api/password/token`, { token: tokenUrl })
+        Axios.post(`/api/forgot/token`, { token: tokenUrl })
             .then((res) => {
                 console.log(JSON.stringify(res.data))
                 setTokenMsg({ verified: true, msg: res.data.msg, email: res.data.email })
@@ -73,7 +75,7 @@ const UpdatePassword = (props) => {
                             <div className="row">
                                 <div className="col-lg-5 d-none d-lg-block bg-register-image"></div>
                                 <div className="col-lg-7 py-5 my-5">
-                                    <div className="p-5 my-5">
+                                    <div className="p-5 ">
                                         <div className="text-center">
                                             <h1 className="h4 mb-4">
                                                 Update Password !
@@ -91,7 +93,11 @@ const UpdatePassword = (props) => {
                                                         required
                                                         autoComplete="on"
                                                         value={password}
-                                                        onChange={(e) => setPassword(e.target.value)}
+                                                        onChange={(e) => {
+                                                            setPassword(e.target.value)
+                                                            const errs = getPasswordErrors(e.target.value, repeatedPassword)
+                                                            setPasswordErros(errs)
+                                                        }}
                                                     />
                                                 </div>
                                                 <div className="col-sm-6">
@@ -103,7 +109,11 @@ const UpdatePassword = (props) => {
                                                         placeholder="Repeat Password"
                                                         value={repeatedPassword}
                                                         autoComplete="on"
-                                                        onChange={(e) => setRepeated(e.target.value)}
+                                                        onChange={(e) => {
+                                                            setRepeated(e.target.value)
+                                                            const errs = getPasswordErrors(password, e.target.value)
+                                                            setPasswordErros(errs)
+                                                        }}
                                                     />
                                                 </div>
                                             </div>
@@ -111,8 +121,28 @@ const UpdatePassword = (props) => {
                                             </div>
                                             <input type="submit" value="Update Password"
                                                 className="btn btn-primary btn-user btn-block"
+                                                disabled= {!allPasswordCorrect(passwordErros)}
                                             />
                                         </form>
+                                        <div className="col-md-12 mt-5 text-left">
+                                            {
+                                                passwordErros.length > 0 ?
+                                                    <>
+                                                        {passwordErros.map((item, key) => (
+                                                            <div key={key}>
+                                                                < ShowPasswordMsg
+                                                                    match={item.valid}
+                                                                    text={item.msg}
+                                                                />
+                                                                <br />
+                                                            </div>
+                                                        ))}
+                                                    </>
+                                                    :
+                                                    null
+                                            }
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>

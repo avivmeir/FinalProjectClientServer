@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import "reactjs-popup/dist/index.css";
-import PopupMessage from "./PopupMessage";
-import RecaptchaWrapper from "./RecaptchaWrapper";
-import { validPassword, validName } from "../Utils"
+import PopupMessage from "../components/PopupMessage";
+import RecaptchaWrapper from "../components/RecaptchaWrapper";
+import { validPassword, validName } from "../utility/Utils"
 
 class CreateUser extends Component {
   state = {

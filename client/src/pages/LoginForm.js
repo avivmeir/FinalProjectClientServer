@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import Axios from "axios";
 
-import RecaptchaWrapper from "./RecaptchaWrapper";
-import PopupMessage from "./PopupMessage";
+import RecaptchaWrapper from "../components/RecaptchaWrapper";
+import PopupMessage from "../components/PopupMessage";
 class LoginForm extends Component {
   state = {
     email: "",

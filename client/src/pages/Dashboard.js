@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import DashBody from "./DashBody";
-import Footer from "./Footer";
-import SideNavbar from "./SideNavbar";
-import TopBar from "./TopBar";
+import DashBody from "../components/DashBody";
+import Footer from "../components/Footer";
+import SideNavbar from "../components/SideNavbar";
+import TopBar from "../components/TopBar";
 import {Routes, Route} from "react-router-dom";
 import BuyPc from "./BuyPc";
 import BuyPhone from "./BuyPhone";
