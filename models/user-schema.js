@@ -33,6 +33,12 @@ let userSchema = new Schema(
     zipCode: {
       type: String,
     },
+    emailToken: {
+      type: String,
+    },
+    isVerified: {
+      type: Boolean,
+    },
     Spare1: {
       type: String,
     },
