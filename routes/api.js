@@ -5,6 +5,19 @@ var jwt = require('jsonwebtoken');
 
 const router = express.Router();
 
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
+var transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "webshopclientserver@gmail.com",
+    pass: "webshop123",
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
+});
+
 const User = require("../models/user-schema");
 
 const websiteUrl = process.env.WEB_URL || `http://localhost:3000/sign-in`
@@ -21,31 +34,111 @@ router.route("/users").get((req, res) => {
   })
 });
 
+// router.post("/sign-up", (req, res) => {
+//   const data = req.body;
+//   User.findOne({ email: req.body.email })
+//     .then((user) => {
+//       if (!user) {
+//         bcrypt.hash(req.body.password, 10, (err, hash) => {
+//           data.password = hash;
+//           const newUser = new User(data);
+//           newUser.save((error) => {
+//             if (error) {
+//               res.status(500).json({ msg: `Sorry, internal server errors ${error}` });
+//               return;
+//             }
+//             return res.json({ msg: "Your data has been saved", });
+//           });
+//         })
+//       } else {
+//         res.status(409).json({ msg: "There is a user with this email." })
+//       }
+//     })
+//     .catch(err => {
+//       res.send('error: ' + err)
+//     });
+
+// });
+
 router.post("/sign-up", (req, res) => {
   const data = req.body;
+
   User.findOne({ email: req.body.email })
     .then((user) => {
       if (!user) {
-        bcrypt.hash(req.body.password, 10, (err, hash) => {
-          data.password = hash;
-          const newUser = new User(data);
-          newUser.save((error) => {
-            if (error) {
-              res.status(500).json({ msg: `Sorry, internal server errors ${error}` });
-              return;
-            }
-            return res.json({ msg: "Your data has been saved", });
-          });
-        })
+        // const expiration = "20m";
+        const token = jwt.sign(req.body, process.env.JWT_SECRET_KEY3);
+        const websiteUrl = process.env.WEB_URL || `http://localhost:3000/`;
+        const verifyUrl = `${websiteUrl}/${token}`;
+        const emailToken = crypto.randomBytes(64).toString("hex");
+        var mailOptions = {
+          from: '"Verify your email" <webshopclientserver@gmail.com>',
+          to: data.email,
+          subject: "Verify your account at webshop",
+          html: `<h2> ${data.firstName}! Thanks for registering on our site </h2>
+                  <h4> Please verify you mail to continue...</h4>
+                  <a href="${websiteUrl}/sign-up/verify-email/${token}">Verify Email</a>`,
+        };
+
+        transporter.sendMail(mailOptions, function(error, info) {
+          if (error) {
+            console.log("sendmailfail " + error);
+          } else {
+            res.json({
+              auth: true,
+              token: token,
+              result: data,
+            });
+          }
+        });
+        //send verification mail to: req.body.email , with: verifyUrl
       } else {
-        res.status(409).json({ msg: "There is a user with this email." })
+        res
+          .status(409)
+          .json({ msg: "There is already a user with this email." });
       }
     })
-    .catch(err => {
-      res.send('error: ' + err)
+    .catch((err) => {
+      res.send("error: " + err);
     });
-
 });
+
+router.post("/sign-up/verify-email/", (req, res) => {
+  try {
+    token = req.body.token;
+    var decoded = jwt.verify(token, process.env.JWT_SECRET_KEY3);
+
+    const newUser = new User(decoded);
+    newUser.save((error) => {
+      if (error) {
+        res.status(500).json({ msg: `Sorry, internal server errors ${error}` });
+        return;
+      }
+      return res.json({ msg: "verified" });
+    });
+  } catch (err) {
+    switch (err.name) {
+      case "TokenExpiredError":
+        console.log(err.message);
+        res.status(401).json({ msg: "This link is expired" });
+        break;
+      case "JsonWebTokenError":
+        //signature isnt verified
+        console.log(err.message);
+        res
+          .status(401)
+          .json({ msg: "Unauthorized : This link is not valid !" });
+        break;
+      default:
+        console.log("name :" + err.name);
+        console.log("msg: " + err.message);
+
+        res.status(500).json({ msg: "Internal server error" });
+    }
+  }
+});
+
+
 
 router.post("/sign-in", (req, res) => {
   User.findOne({ email: req.body.email })
