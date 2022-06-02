@@ -11,6 +11,7 @@ import HeaderSign from "./components/HeaderSign";
 import NotFound404 from "./pages/NotFound404";
 import UpdatePassword from "./pages/UpdatePassword";
 import UpdateEmail from "./pages/UpdateEmail";
+import NewUser from "./pages/NewUser";
 
 
 class App extends Component {
@@ -53,6 +54,7 @@ class App extends Component {
           <Routes>
             <Route path="/update-password/*" element={<UpdatePassword />} />
             <Route path="/update-email/*" element={<UpdateEmail logoutCB = {this.handleLogout}/>}/>
+            <Route path="/new-user/*" element={<NewUser/>} />
 
             <Route
               exact path="/"

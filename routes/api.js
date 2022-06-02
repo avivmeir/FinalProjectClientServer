@@ -67,30 +67,34 @@ router.post("/sign-up", (req, res) => {
     .then((user) => {
       if (!user) {
         // const expiration = "20m";
-        const token = jwt.sign(req.body, process.env.JWT_SECRET_KEY3);
+        const expiration = '20m'
+        const token = jwt.sign(req.body, process.env.JWT_SECRET_KEY_USER, { expiresIn: expiration });
         const websiteUrl = process.env.WEB_URL || `http://localhost:3000/`;
         const verifyUrl = `${websiteUrl}/${token}`;
-        const emailToken = crypto.randomBytes(64).toString("hex");
-        var mailOptions = {
-          from: '"Verify your email" <webshopclientserver@gmail.com>',
-          to: data.email,
-          subject: "Verify your account at webshop",
-          html: `<h2> ${data.firstName}! Thanks for registering on our site </h2>
-                  <h4> Please verify you mail to continue...</h4>
-                  <a href="${websiteUrl}/sign-up/verify-email/${token}">Verify Email</a>`,
-        };
+  
+        console.log(`token: ${token}`)       
+        res.json({msg: 'valid'})
+        //const emailToken = crypto.randomBytes(64).toString("hex");
+        // var mailOptions = {
+        //   from: '"Verify your email" <webshopclientserver@gmail.com>',
+        //   to: data.email,
+        //   subject: "Verify your account at webshop",
+        //   html: `<h2> ${data.firstName}! Thanks for registering on our site </h2>
+        //           <h4> Please verify you mail to continue...</h4>
+        //           <a href="${websiteUrl}/sign-up/verify-email/${token}">Verify Email</a>`,
+        // };
 
-        transporter.sendMail(mailOptions, function(error, info) {
-          if (error) {
-            console.log("sendmailfail " + error);
-          } else {
-            res.json({
-              auth: true,
-              token: token,
-              result: data,
-            });
-          }
-        });
+        // transporter.sendMail(mailOptions, function(error, info) {
+        //   if (error) {
+        //     console.log("sendmailfail " + error);
+        //   } else {
+        //     res.json({
+        //       auth: true,
+        //       token: token,
+        //       result: data,
+        //     });
+        //   }
+        // });
         //send verification mail to: req.body.email , with: verifyUrl
       } else {
         res
@@ -99,41 +103,54 @@ router.post("/sign-up", (req, res) => {
       }
     })
     .catch((err) => {
-      res.send("error: " + err);
+      res.status(409).json({error: err});
     });
 });
 
-router.post("/sign-up/verify-email/", (req, res) => {
+router.post("/sign-up/verify-email", (req, res) => {
   try {
     token = req.body.token;
-    var decoded = jwt.verify(token, process.env.JWT_SECRET_KEY3);
-
-    const newUser = new User(decoded);
-    newUser.save((error) => {
-      if (error) {
-        res.status(500).json({ msg: `Sorry, internal server errors ${error}` });
-        return;
+    var decoded = jwt.verify(token, process.env.JWT_SECRET_KEY_USER);
+    
+    User.findOne({ email: decoded.email }).then((user) => {
+      if (user) {
+        res.status(401).json({ error: "Email already registerd" });
+      } else {
+        bcrypt.hash(decoded.password, 10, (err, hash) => {
+          decoded.password = hash;
+          const newUser = new User(decoded);
+          newUser.save((error) => {
+            if (error) {
+              res.status(500).json({ msg: `Sorry, internal server errors ${error}` });
+              return;
+            }
+            return res.json({ msg: "Welcome to our shop !!" });
+          });
+        });
       }
-      return res.json({ msg: "verified" });
+    }).catch(err => {
+      console.log(err);
+      res.status(500).json({ error: 'Internal server error' })
     });
+ 
   } catch (err) {
     switch (err.name) {
       case "TokenExpiredError":
         console.log(err.message);
-        res.status(401).json({ msg: "This link is expired" });
+        res.status(401).json({ error: "This link is expired" });
         break;
       case "JsonWebTokenError":
         //signature isnt verified
         console.log(err.message);
         res
           .status(401)
-          .json({ msg: "Unauthorized : This link is not valid !" });
+          .json({ error: "Unauthorized : This link is not valid !" });
         break;
       default:
         console.log("name :" + err.name);
         console.log("msg: " + err.message);
 
-        res.status(500).json({ msg: "Internal server error" });
+        res.status(500).json({ error: "Internal server error" });
     }
   }
 });
