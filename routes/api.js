@@ -50,7 +50,7 @@ router.post("/sign-up", (req, res) => {
 
         //send verification mail to: req.body.email , with: verifyUrl
         var mailOptions = {
-          from: `Admin  <${process.env.EMAIL_ADDRESS}>`,
+          from: `Webshop  <${process.env.EMAIL_ADDRESS}>`,
           to: data.email,
           subject: "Verify your account at webshop",
           html: `<h2> ${data.firstName}! Thanks for registering on our site </h2>
@@ -66,14 +66,13 @@ router.post("/sign-up", (req, res) => {
           }
         });
       } else {
-        console.log( "There is already a user with this email.")
         res
           .status(409)
           .json({ error: "There is already a user with this email." });
       }
     })
     .catch((err) => {
-      console.log( err)
+      console.log(err)
       res.status(500).json({ error: 'Internal server error' });
     });
 });
@@ -146,7 +145,6 @@ router.post("/sign-in", (req, res) => {
 });
 
 router.post("/profile", (req, res) => {
-  console.log(req.body.email.toLowerCase())
   User.findOne({ email: req.body.email.toLowerCase() })
     .then((data) => {
       if (!data) {
@@ -198,7 +196,7 @@ router.put("/profile/updatemail", (req, res) => {
             //send verification mail to: req.body.email , with: verifyUrl
             const verifyUrl = `${websiteUrl}/update-email/${token}`
             var mailOptions = {
-              from: process.env.EMAIL_ADDRESS,
+              from: `Webshop  <${process.env.EMAIL_ADDRESS}>`,
               to: user.email,
               subject: "Verify your email address change at webshop",
               html: `<h2>Hello ${user.firstName}!</h2>
@@ -216,8 +214,6 @@ router.put("/profile/updatemail", (req, res) => {
                 });
               }
             });
-            console.log(`jwt: ${token} , data: ${JSON.stringify(emailObj)}`);
-
             res.json({
               msg: `In order to update your email we sent a verification link to your current mail. The link will be expired in ${expiration}`,
             });
@@ -355,16 +351,16 @@ router.post("/forgot", async (req, res) => {
           process.env.JWT_SECRET_KEY_PASSWORD,
           { expiresIn: expiration }
         );
+        //send verification mail to: req.body.email , with: verifyUrl
         const verifyUrl = `${websiteUrl}/update-password/${token}`;
         var mailOptions = {
-          from: process.env.EMAIL_ADDRESS,
+          from: `Webshop  <${process.env.EMAIL_ADDRESS}>`,
           to: data.email,
           subject: "Change your password at webshop",
           html: `<h2> ${data.firstName}! Please change your password on our site </h2>
                    <p>this link will expire in 20 minutes</p>
                    <a href="${verifyUrl}">${verifyUrl}</a>`,
         };
-
         transporter.sendMail(mailOptions, function (error, info) {
           if (error) {
             console.log("sendmailfail " + error);
@@ -376,10 +372,6 @@ router.post("/forgot", async (req, res) => {
             });
           }
         });
-        console.log(`jwt: ${token} , data: ${req.body.email}`);
-
-        //send verification mail to: req.body.email , with: verifyUrl
-
         res.json({
           msg: `We sent a verification link to your mail. The link will be expired in ${expiration}`,
         });
@@ -444,8 +436,7 @@ router.put("/forgot/changepassword", (req, res) => {
 
           // send confirmation email about password was changed
           var mailOptions = {
-            from:
-              '"Your Password Changed Successfully" <webshopclientserver@gmail.com>',
+            from: `Webshop  <${process.env.EMAIL_ADDRESS}>`,
             to: user.email,
             subject: "Your Password Changed Successfully",
             html: `<h2> ${user.firstName}! you changed your password </h2>

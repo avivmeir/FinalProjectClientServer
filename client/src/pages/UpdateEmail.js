@@ -21,14 +21,12 @@ const UpdateEmail = (props) => {
     const verifyToken = () => {
         var regEx = new RegExp('/update-email/', "ig");
         const tokenUrl = window.location.pathname.replace(regEx, '');
-        console.log(`token ${tokenUrl}`)
         Axios.put(`/api/email/token`, { token: tokenUrl })
             .then((res) => {
-                console.log(JSON.stringify(res.data))
                 setTokenMsg({ verified: true, msg: res.data.msg, oldEmail: res.data.oldEmail, newEmail: res.data.newEmail })
             })
             .catch((AxiosError) => {
-                console.log(AxiosError)
+                console.log(AxiosError.response)
                 setTokenMsg({ verified: false, msg: AxiosError.response.data.error })
             });
     };

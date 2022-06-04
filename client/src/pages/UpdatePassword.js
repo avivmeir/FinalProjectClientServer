@@ -24,11 +24,10 @@ const UpdatePassword = (props) => {
         const tokenUrl = window.location.pathname.replace(regEx, '');
         Axios.post(`/api/forgot/token`, { token: tokenUrl })
             .then((res) => {
-                console.log(JSON.stringify(res.data))
                 setTokenMsg({ verified: true, msg: res.data.msg, email: res.data.email })
             })
             .catch((AxiosError) => {
-                console.log(AxiosError)
+                console.log(AxiosError.response)
                 setTokenMsg({ verified: false, msg: AxiosError.response.data.error })
             });
     }
@@ -45,11 +44,10 @@ const UpdatePassword = (props) => {
         Axios
             .put(`/api/forgot/changepassword`, emailPassword)
             .then((res) => {
-                console.log(res)
                 setPopupMsg({ title: 'Congratulation', text: res.data.msg })
 
             }).catch((AxiosError) => {
-                console.log(AxiosError)
+                console.log(AxiosError.response)
                 setPopupMsg({ title: "Error", text: AxiosError.response.data.error })
             })
 

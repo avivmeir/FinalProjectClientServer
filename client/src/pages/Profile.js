@@ -193,7 +193,6 @@ class Profile extends Component {
     axios
       .put(`/api/profile/changepassword`, password)
       .then((res) => {
-        console.log(res)
         this.setState(prevState => ({
           popTitle: 'Update Password',
           popMsg: [res.data.msg],
@@ -203,7 +202,7 @@ class Profile extends Component {
         this.getUserDetails()
 
       }).catch((AxiosError) => {
-        console.log(AxiosError)
+        console.log(AxiosError.response)
         this.setState(prevState => ({
           popTitle: 'Update Password Failed',
           popMsg: [AxiosError.response.data.error],

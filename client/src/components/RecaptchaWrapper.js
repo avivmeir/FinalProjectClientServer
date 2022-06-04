@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import ReCAPTCHA from "react-google-recaptcha";
+//import ReCAPTCHA from "react-google-recaptcha";
 import Reaptcha from 'reaptcha';
 import AppConfig from "../App.config";
 import Axios from "axios";
 import PopupMessage from './PopupMessage';
 
-const grecaptchaObject = window.grecaptcha // You must provide access to the google grecaptcha object.
+//const grecaptchaObject = window.grecaptcha // You must provide access to the google grecaptcha object.
 
 class RecaptchaWrapper extends Component {
     captcha = null
@@ -28,11 +28,9 @@ class RecaptchaWrapper extends Component {
         // send value token to server for verigying
         Axios.post("/api/recaptcha", token)
             .then((res) => {
-                console.log(res.data);
                 this.props.afterVerify(true, res.data)
             })
             .catch((error) => {
-                console.log(error);
                 this.setState({ error: `${error.message}. Try again later.`})
                 this.props.afterVerify(false, error)
             });

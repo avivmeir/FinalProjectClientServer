@@ -9,7 +9,6 @@ import { Link } from "react-router-dom";
 
 class TopBar extends Component {
   onLogout = () => {
-    console.log("logout");
     this.props.handleLogout();
   };
   render() {

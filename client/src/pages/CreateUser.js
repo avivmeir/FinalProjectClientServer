@@ -86,7 +86,6 @@ class CreateUser extends Component {
     axios
       .post("/api/sign-up", userObject)
       .then((res) => {
-       // console.log(res.data);
         this.setState(prevState => ({
           validation: {
             ...prevState.validation,
@@ -95,7 +94,6 @@ class CreateUser extends Component {
         }));
       })
       .catch((AxiosError) => {
-        console.log(AxiosError);
         this.setState(prevState => ({
           validation: {
             ...prevState.validation,
@@ -164,6 +162,7 @@ class CreateUser extends Component {
                             id="exampleInputPassword"
                             placeholder="Password"
                             required
+                            autoComplete="on"
                             value={this.state.password}
                             onChange={this.onChangePassword}
                           />
@@ -175,6 +174,7 @@ class CreateUser extends Component {
                             className="form-control form-control-user"
                             id="exampleRepeatPassword"
                             placeholder="Repeat Password"
+                            autoComplete="on"
                             value={this.state.repeatPassword}
                             onChange={this.onChangeRepeatPassword}
                           />

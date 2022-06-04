@@ -44,8 +44,6 @@ class LoginForm extends Component {
           this.state.email,
           res.data.firstName
         );
-        console.log(`login remember ${this.state.isRememberMe}`);
-        console.log(res);
       })
       .catch((AxiosError) => {
         console.log(AxiosError.response);
@@ -89,6 +87,7 @@ class LoginForm extends Component {
                               type="password"
                               required
                               className="form-control form-control-user"
+                              autoComplete="on"
                               value={this.state.password}
                               onChange={this.onChangePassword}
                               id="exampleInputPassword"

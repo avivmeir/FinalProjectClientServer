@@ -18,7 +18,7 @@ export function passwordWithNumbers(password) {
     return /\d/.test(password)
 }
 export function passwordWithChars(password) {
-    return /[a-zA-Z]/.test(password)
+    return /[a-zA-Zא-ת]/.test(password)
 }
 
 export function validPassword(password) {

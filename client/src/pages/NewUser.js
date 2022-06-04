@@ -20,14 +20,12 @@ const NewUser = (props) => {
     const verifyToken = () => {
         var regEx = new RegExp('/new-user/', "ig");
         const tokenUrl = window.location.pathname.replace(regEx, '');
-        console.log(`token ${tokenUrl}`)
         Axios.post(`/api/sign-up/verify-email`, { token: tokenUrl })
             .then((res) => {
-                console.log(JSON.stringify(res.data))
                 setTokenMsg({ verified: true, msg: res.data.msg})
             })
             .catch((AxiosError) => {
-                console.log(AxiosError)
+                console.log(AxiosError.response)
                 setTokenMsg({ verified: false, msg: AxiosError.response.data.error })
             });
     };
