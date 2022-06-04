@@ -95,11 +95,11 @@ class CreateUser extends Component {
         }));
       })
       .catch((AxiosError) => {
-        console.log(AxiosError.response);
+        console.log(AAxiosError.response.data.error);
         this.setState(prevState => ({
           validation: {
             ...prevState.validation,
-            msg: [ AxiosError.response.data.error]
+            msg: [ 'Error']
           }
         }));
       });
