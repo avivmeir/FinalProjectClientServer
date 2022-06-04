@@ -86,7 +86,7 @@ class CreateUser extends Component {
     axios
       .post("/api/sign-up", userObject)
       .then((res) => {
-        console.log(res.data);
+       // console.log(res.data);
         this.setState(prevState => ({
           validation: {
             ...prevState.validation,
@@ -95,7 +95,7 @@ class CreateUser extends Component {
         }));
       })
       .catch((AxiosError) => {
-        console.log(AxiosError.response);
+      //  console.log(AxiosError.response);
         this.setState(prevState => ({
           validation: {
             ...prevState.validation,
