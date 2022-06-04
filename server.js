@@ -1,6 +1,6 @@
 // Import npm packages
 const express = require("express");
-const mongoose = require("mongoose");
+const mongoose = require("mongoose")
 const morgan = require("morgan");
 const path = require("path");
 const cookieParser = require("cookie-parser");
@@ -13,15 +13,14 @@ const PORT = process.env.PORT || 8080; // Step 1
 const routes = require("./routes/api");
 
 // Step 2
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/mern_proj', {
+ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/mern_proj', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
-
-
 mongoose.connection.on("connected", () => {
   console.log("Mongoose is connected!!!!");
 });
+
 
 // Data parsing
 app.use(express.json());
@@ -36,7 +35,7 @@ app.use(cookieParser());
 app.use(express.static(path.resolve(__dirname, "./client/build")));
 
 app.all("/api/*", function(req, res, next) {
- // console.log("General Validations");
+  console.log("General Validations");
   next();
 });
 

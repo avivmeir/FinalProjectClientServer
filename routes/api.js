@@ -7,6 +7,7 @@ var jwt = require("jsonwebtoken");
 const router = express.Router();
 
 const User = require("../models/user-schema");
+const Promo = require("../models/PromoCode");
 
 const websiteUrl = process.env.WEB_URL || `http://localhost:3000`;
 
@@ -464,4 +465,15 @@ router.put("/forgot/changepassword", (req, res) => {
     });
 });
 
+router.post('/promo', (req, res) => {
+  const promo = new Promo(req.body);
+  promo.save((error) => {
+    if (error) {
+      console.log(error.message)
+      res.status(500).json({ msg: `Sorry, internal server errors ${error}` });
+      return;
+    }
+    return res.json({ msg: `promo saved` });
+  });
+})
 module.exports = router;
