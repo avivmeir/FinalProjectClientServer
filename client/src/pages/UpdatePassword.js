@@ -22,7 +22,6 @@ const UpdatePassword = (props) => {
     const verifyToken = () => {
         var regEx = new RegExp('/update-password/', "ig");
         const tokenUrl = window.location.pathname.replace(regEx, '');
-        console.log(`token ${tokenUrl}`)
         Axios.post(`/api/forgot/token`, { token: tokenUrl })
             .then((res) => {
                 console.log(JSON.stringify(res.data))
@@ -41,7 +40,6 @@ const UpdatePassword = (props) => {
             return
         }
         verifyToken()
-        console.log(`email: ${tokenMsg.email}`)
         const emailPassword = { email: tokenMsg.email, password: password }
 
         Axios

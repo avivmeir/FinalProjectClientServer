@@ -73,10 +73,8 @@ class CreateUser extends Component {
   onSubmit = (e) => {
     e.preventDefault();
     if (!this.fieldsAreValid()) {
-      console.log("not valid")
       return
     }
-    console.log("valid")
 
     const userObject = {
       firstName: this.state.firstName,
