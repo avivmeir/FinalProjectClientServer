@@ -50,7 +50,7 @@ router.post("/sign-up", (req, res) => {
 
         //send verification mail to: req.body.email , with: verifyUrl
         var mailOptions = {
-          from: process.env.EMAIL_ADDRESS,
+          from: `Admin  <${process.env.EMAIL_ADDRESS}>`,
           to: data.email,
           subject: "Verify your account at webshop",
           html: `<h2> ${data.firstName}! Thanks for registering on our site </h2>
