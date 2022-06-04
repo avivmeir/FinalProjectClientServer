@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Axios from 'axios'
-const img = require('../app_photos/email-dog.jpg')
+const img = require('../app_photos/dog-new-user.jpg')
 const divHeight = window.innerHeight - (window.innerHeight / 3)
 
 const NewUser = (props) => {
@@ -11,7 +11,7 @@ const NewUser = (props) => {
     useEffect(() => {
         if (!mounted.current) {
             // do componentDidMount logic
-          //  props.logoutCB()
+            props.logoutCB()
             verifyToken();
             mounted.current = true;
         }
@@ -24,7 +24,7 @@ const NewUser = (props) => {
         Axios.post(`/api/sign-up/verify-email`, { token: tokenUrl })
             .then((res) => {
                 console.log(JSON.stringify(res.data))
-                setTokenMsg({ verified: true, msg: res.data.msg, oldEmail: res.data.oldEmail, newEmail: res.data.newEmail })
+                setTokenMsg({ verified: true, msg: res.data.msg})
             })
             .catch((AxiosError) => {
                 console.log(AxiosError)

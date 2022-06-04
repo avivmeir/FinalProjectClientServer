@@ -15,12 +15,12 @@ class Profile extends Component {
         lastName: "",
         phone: "",
         country: "",
-        email: this.props.emailAdress,
+        email: this.props.emailAdress.toLowerCase(),
         city: "",
         street: "",
         zipCode: ""
       },
-      newEmail: this.props.emailAdress,
+      newEmail: this.props.emailAdress.toLowerCase(),
       initialDetails: {},
 
       popTitle: '',
@@ -132,7 +132,7 @@ class Profile extends Component {
       return
     }
 
-    if (this.state.newEmail !== this.props.emailAdress) {
+    if (this.state.newEmail.toLowerCase() !== this.props.emailAdress.toLowerCase()) {
       //update with new email
       const user = { newEmail: this.state.newEmail, details: this.state.details }
       axios.put(`/api/profile/updatemail`, user)
@@ -186,7 +186,7 @@ class Profile extends Component {
       return
     }
     const password = {
-      email: this.props.emailAdress,
+      email: this.props.emailAdress.toLowerCase(),
       old: this.state.password.old,
       new: this.state.password.new
     }
@@ -215,7 +215,7 @@ class Profile extends Component {
   };
 
   getUserDetails = () => {
-    const userObject = { email: this.props.emailAdress };
+    const userObject = { email: this.props.emailAdress.toLowerCase() };
     axios.post(`/api/profile`, userObject).then((res) => {
       this.setState({
         details: {
@@ -223,7 +223,7 @@ class Profile extends Component {
           lastName: res.data.lastName,
           phone: res.data.phone || "",
           country: res.data.country || "",
-          email: this.props.emailAdress,
+          email: this.props.emailAdress.toLowerCase(),
           city: res.data.city || "",
           street: res.data.street || "",
           zipCode: res.data.zipCode || "",
@@ -234,12 +234,21 @@ class Profile extends Component {
     })
       .catch((AxiosError) => {
         console.log(AxiosError.response);
-        this.setState(prevState => ({
-          popTitle: 'Error',
-          popMsg: [(AxiosError.response.data.error)],
-          msgStatus: 'error'
-
-        }))
+        if(AxiosError.response.data.error.trim() ==='Invalid Email' ){
+          this.props.emailAdress = this.state.newEmail
+          this.setState(prevState => ({
+            details: {...prevState.details, email: this.state.newEmail}
+          }))
+        }
+        else{
+          this.setState(prevState => ({
+            popTitle: 'Error',
+            popMsg: [(AxiosError.response.data.error)],
+            msgStatus: 'error'
+  
+          }))
+        }
+        
       });
   };
 
@@ -488,7 +497,7 @@ class Profile extends Component {
               }
               onClose={() => {
                 let emailAdd = this.state.popTitle === 'Error' ? this.state.details.email : this.state.newEmail
-                this.setState({ popMsg: '', popTitle: '', msgStatus: '', newEmail: emailAdd })
+                this.setState({ popMsg: '', popTitle: '', msgStatus: '', newEmail: emailAdd.toLowerCase() })
                 this.getUserDetails()
               }}
               closeOnlyWithBtn={this.state.popTitle === 'Successful Update - Updating Email' ?

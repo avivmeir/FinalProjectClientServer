@@ -54,7 +54,7 @@ class App extends Component {
           <Routes>
             <Route path="/update-password/*" element={<UpdatePassword />} />
             <Route path="/update-email/*" element={<UpdateEmail logoutCB = {this.handleLogout}/>}/>
-            <Route path="/new-user/*" element={<NewUser/>} />
+            <Route path="/new-user/*" element={<NewUser logoutCB = {this.handleLogout}/>} />
 
             <Route
               exact path="/"

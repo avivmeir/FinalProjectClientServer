@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Axios from 'axios'
 const img = require('../app_photos/email-dog.jpg')
+
 const divHeight = window.innerHeight - (window.innerHeight / 3)
 
 const UpdateEmail = (props) => {

@@ -6,22 +6,22 @@ var jwt = require("jsonwebtoken");
 
 const router = express.Router();
 
+const User = require("../models/user-schema");
+
+const websiteUrl = process.env.WEB_URL || `http://localhost:3000`;
+
 const nodemailer = require("nodemailer");
-const crypto = require("crypto");
 var transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "webshopclientserver@gmail.com",
-    pass: "webshop123",
+    user: process.env.EMAIL_ADDRESS,
+    pass: process.env.EMAIL_PASSWORD,
   },
   tls: {
     rejectUnauthorized: false,
   },
 });
 
-const User = require("../models/user-schema");
-
-const websiteUrl = process.env.WEB_URL || `http://localhost:3000`;
 
 // Routes
 //Users
@@ -35,36 +35,10 @@ router.route("/users").get((req, res) => {
   });
 });
 
-// router.post("/sign-up", (req, res) => {
-//   const data = req.body;
-//   User.findOne({ email: req.body.email })
-//     .then((user) => {
-//       if (!user) {
-//         bcrypt.hash(req.body.password, 10, (err, hash) => {
-//           data.password = hash;
-//           const newUser = new User(data);
-//           newUser.save((error) => {
-//             if (error) {
-//               res.status(500).json({ msg: `Sorry, internal server errors ${error}` });
-//               return;
-//             }
-//             return res.json({ msg: "Your data has been saved", });
-//           });
-//         })
-//       } else {
-//         res.status(409).json({ msg: "There is a user with this email." })
-//       }
-//     })
-//     .catch(err => {
-//       res.send('error: ' + err)
-//     });
-
-// });
-
 router.post("/sign-up", (req, res) => {
   const data = req.body;
-
-  User.findOne({ email: req.body.email })
+  data.email = data.email.toLowerCase()
+  User.findOne({ email: data.email })
     .then((user) => {
       if (!user) {
         // const expiration = "20m";
@@ -72,22 +46,21 @@ router.post("/sign-up", (req, res) => {
         const token = jwt.sign(req.body, process.env.JWT_SECRET_KEY_USER, {
           expiresIn: expiration,
         });
-        const websiteUrl = process.env.WEB_URL || `http://localhost:3000`;
-        const verifyUrl = `${websiteUrl}/${token}`;
+        const verifyUrl = `${websiteUrl}/new-user/${token}`;
 
         console.log(`token: ${token}`);
         res.json({ msg: "valid" });
-        //const emailToken = crypto.randomBytes(64).toString("hex");
         var mailOptions = {
-          from: '"Verify your email" <webshopclientserver@gmail.com>',
+          from: process.env.EMAIL_ADDRESS,
           to: data.email,
           subject: "Verify your account at webshop",
           html: `<h2> ${data.firstName}! Thanks for registering on our site </h2>
                    <h4> Please verify you mail to continue...</h4>
-                   <a href="${websiteUrl}/new-user/${token}">Verify Email</a>`,
+                   <a href="${verifyUrl}">${verifyUrl}</a>`,
+          //attachDataUrls: true
         };
 
-        transporter.sendMail(mailOptions, function(error, info) {
+        transporter.sendMail(mailOptions, function (error, info) {
           if (error) {
             console.log("sendmailfail " + error);
           } else {
@@ -118,7 +91,7 @@ router.post("/sign-up/verify-email", (req, res) => {
     User.findOne({ email: decoded.email })
       .then((user) => {
         if (user) {
-          res.status(401).json({ error: "Email already registerd" });
+          res.status(401).json({ error: "Email already registered" });
         } else {
           bcrypt.hash(decoded.password, 10, (err, hash) => {
             decoded.password = hash;
@@ -130,7 +103,7 @@ router.post("/sign-up/verify-email", (req, res) => {
                   .json({ msg: `Sorry, internal server errors ${error}` });
                 return;
               }
-              return res.json({ msg: "Welcome to our shop !!" });
+              return res.json({ msg: `Hi ${newUser.firstName}, you are now registered. Welcome to our shop !!` });
             });
           });
         }
@@ -162,7 +135,7 @@ router.post("/sign-up/verify-email", (req, res) => {
 });
 
 router.post("/sign-in", (req, res) => {
-  User.findOne({ email: req.body.email })
+  User.findOne({ email: req.body.email.toLowerCase() })
     .then((data) => {
       bcrypt.compare(req.body.password, data.password, (err, result) => {
         if (!data || !result) {
@@ -178,7 +151,8 @@ router.post("/sign-in", (req, res) => {
 });
 
 router.post("/profile", (req, res) => {
-  User.findOne({ email: req.body.email })
+  console.log(req.body.email.toLowerCase())
+  User.findOne({ email: req.body.email.toLowerCase() })
     .then((data) => {
       if (!data) {
         res.status(401).json({ error: "Invalid Email" });
@@ -193,7 +167,7 @@ router.post("/profile", (req, res) => {
 });
 
 router.put("/profile", (req, res) => {
-  User.findOneAndUpdate({ email: req.body.email }, req.body)
+  User.findOneAndUpdate({ email: req.body.email.toLowerCase() }, req.body)
     .then((data) => {
       if (!data) {
         res.status(401).json({ error: "Invalid Email" });
@@ -208,11 +182,11 @@ router.put("/profile", (req, res) => {
 });
 
 router.put("/profile/updatemail", (req, res) => {
-  User.findOne({ email: req.body.newEmail }).then((data) => {
+  User.findOne({ email: req.body.newEmail.toLowerCase() }).then((data) => {
     if (!data) {
       let emailObj = {
-        oldEmail: req.body.details.email,
-        newEmail: req.body.newEmail,
+        oldEmail: req.body.details.email.toLowerCase(),
+        newEmail: req.body.newEmail.toLowerCase(),
       };
 
       User.findOneAndUpdate({ email: emailObj.oldEmail }, req.body.details)
@@ -225,17 +199,18 @@ router.put("/profile/updatemail", (req, res) => {
             const token = jwt.sign(emailObj, process.env.JWT_SECRET_KEY_EMAIL, {
               expiresIn: expiration,
             });
+
+            const verifyUrl = `${websiteUrl}/update-email/${token}`
             var mailOptions = {
-              from:
-                '"Verify your email Change" <webshopclientserver@gmail.com>',
+              from: process.env.EMAIL_ADDRESS,
               to: user.email,
               subject: "Verify your email address change at webshop",
               html: `<h2>Hello ${user.firstName}!</h2>
                    <h4> Please click to verify your email changing in our shop.</h4>
-                   <a href="${websiteUrl}/update-email/${token}">Change Email</a>`,
+                   <a href="${verifyUrl}">${verifyUrl}</a>`,
             };
 
-            transporter.sendMail(mailOptions, function(error, info) {
+            transporter.sendMail(mailOptions, function (error, info) {
               if (error) {
                 console.log("sendmailfail " + error);
               } else {
@@ -274,7 +249,16 @@ router.put("/email/token", (req, res) => {
     )
       .then((user) => {
         if (!user) {
-          res.status(401).json({ error: "Invalid Email" });
+          User.findOne({ email: decoded.newEmail })
+            .then((user) => {
+              if (!user) {
+                res.status(401).json({ error: "Invalid Email" });
+              }
+              else {
+                res.status(401).json({ error: "Email already changed" });
+
+              }
+            })
         } else {
           res.json({
             msg: `Your Email was successfully updated !!`,
@@ -310,14 +294,14 @@ router.put("/email/token", (req, res) => {
 });
 
 router.put("/profile/changepassword", (req, res) => {
-  User.findOne({ email: req.body.email })
+  User.findOne({ email: req.body.email.toLowerCase() })
     .then((user) => {
       if (!user) {
         res.status(401).json({ error: "Invalid Email" });
       } else {
         bcrypt.compare(req.body.old, user.password, (err, result) => {
           if (result) {
-            bcrypt.hash(req.body.new, 10, function(err, hash) {
+            bcrypt.hash(req.body.new, 10, function (err, hash) {
               user.password = hash;
               user.save((err) => {
                 if (err) {
@@ -325,26 +309,7 @@ router.put("/profile/changepassword", (req, res) => {
                   res.status(500).json({ error: "Internal server error" });
                 }
               });
-              var mailOptions = {
-                from:
-                  '"Your Password Changed Successfully" <webshopclientserver@gmail.com>',
-                to: user.email,
-                subject: "Your Password Changed Successfully",
-                html: `<h2> ${user.firstName}! you changed your password </h2>
-                   <p>this email is a confirmation that your password changed successfully at our shop</p>`,
-              };
 
-              transporter.sendMail(mailOptions, function(error, info) {
-                if (error) {
-                  console.log("sendmailfail " + error);
-                } else {
-                  res.json({
-                    token: token,
-                    result: data,
-                    msg: "New password was saved",
-                  });
-                }
-              });
               res.json({
                 msg: "New password was saved",
               });
@@ -366,7 +331,7 @@ router.post("/recaptcha", async (req, res, next) => {
     return res.status(400).json({ error: "reCaptcha token is missing" });
   }
   try {
-    const googleVerifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=6LeJ9wUgAAAAAHv55qEemD5ROvaJxezk48-dn82h&response=${req.body.token}`;
+    const googleVerifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.token}`;
     const response = await axios.post(googleVerifyUrl);
     const { success } = response.data;
     if (success) {
@@ -382,30 +347,31 @@ router.post("/recaptcha", async (req, res, next) => {
   }
 });
 
-router.post("/forgot", (req, res) => {
-  User.findOne({ email: req.body.email })
+router.post("/forgot", async (req, res) => {
+  User.findOne({ email: req.body.email .toLowerCase()})
     .then((data) => {
       if (!data) {
         res.status(401).json({ error: "Invalid Email" });
       } else {
         //jwt signing
         const expiration = "20m";
+        const passwordJwt = jwt.sign({ passwordJwt: data.password }, data.password, { expiresIn: expiration })
         const token = jwt.sign(
-          { email: req.body.email },
+          { email: req.body.email.toLowerCase(), passwordJwt },
           process.env.JWT_SECRET_KEY_PASSWORD,
           { expiresIn: expiration }
         );
         const verifyUrl = `${websiteUrl}/update-password/${token}`;
         var mailOptions = {
-          from: '"Change your password" <webshopclientserver@gmail.com>',
+          from: process.env.EMAIL_ADDRESS,
           to: data.email,
           subject: "Change your password at webshop",
           html: `<h2> ${data.firstName}! Please change your password on our site </h2>
                    <p>this link will expire in 20 minutes</p>
-                   <a href="${websiteUrl}/update-password/${token}">Change Password</a>`,
+                   <a href="${verifyUrl}">${verifyUrl}</a>`,
         };
 
-        transporter.sendMail(mailOptions, function(error, info) {
+        transporter.sendMail(mailOptions, function (error, info) {
           if (error) {
             console.log("sendmailfail " + error);
           } else {
@@ -434,10 +400,17 @@ router.post("/forgot", (req, res) => {
 router.post("/forgot/token", (req, res) => {
   token = req.body.token;
   try {
-    var decoded = jwt.verify(token, process.env.JWT_SECRET_KEY_PASSWORD);
-    console.log(decoded.email);
-
-    res.json({ msg: "verified", email: decoded.email });
+    let decoded = jwt.verify(token, process.env.JWT_SECRET_KEY_PASSWORD);
+    User.findOne({ email: decoded.email })
+      .then((data) => {
+        jwt.verify(decoded.passwordJwt, data.password)
+        res.json({ msg: "verified", email: decoded.email });
+      }).catch(err => {
+        
+        res.status(409).json({ error: "This link is expired" })
+        
+      })
+   
   } catch (err) {
     switch (err.name) {
       case "TokenExpiredError":
@@ -461,7 +434,7 @@ router.post("/forgot/token", (req, res) => {
 });
 
 router.put("/forgot/changepassword", (req, res) => {
-  User.findOne({ email: req.body.email })
+  User.findOne({ email: req.body.email.toLowerCase() })
     .then((user) => {
       if (!user) {
         res.status(401).json({ error: "Invalid Email" });
@@ -476,7 +449,26 @@ router.put("/forgot/changepassword", (req, res) => {
           });
 
           // send confirmation email about password was changed
+          var mailOptions = {
+            from:
+              '"Your Password Changed Successfully" <webshopclientserver@gmail.com>',
+            to: user.email,
+            subject: "Your Password Changed Successfully",
+            html: `<h2> ${user.firstName}! you changed your password </h2>
+               <p>This email is a confirmation that your password changed successfully at our shop</p>`,
+          };
 
+          transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+              console.log("sendmailfail " + error);
+            } else {
+              res.json({
+                token: token,
+                result: data,
+                msg: "New password was saved",
+              });
+            }
+          });
           res.json({ msg: "New password was saved" });
         });
       }
