@@ -74,7 +74,7 @@ router.post("/sign-up", (req, res) => {
     })
     .catch((err) => {
       console.log( err)
-      res.status(409).json({ error: err });
+      res.status(500).json({ error: 'Internal server error' });
     });
 });
 
