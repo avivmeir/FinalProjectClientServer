@@ -66,12 +66,14 @@ router.post("/sign-up", (req, res) => {
           }
         });
       } else {
+        console.log( "There is already a user with this email.")
         res
           .status(409)
           .json({ error: "There is already a user with this email." });
       }
     })
     .catch((err) => {
+      console.log( err)
       res.status(409).json({ error: err });
     });
 });
