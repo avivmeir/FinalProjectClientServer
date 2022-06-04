@@ -99,7 +99,7 @@ class CreateUser extends Component {
         this.setState(prevState => ({
           validation: {
             ...prevState.validation,
-            msg: [...prevState.validation.msg, AxiosError.response.data.error]
+            msg: [ AxiosError.response.data.error]
           }
         }));
       });
