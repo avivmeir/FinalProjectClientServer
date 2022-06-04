@@ -48,8 +48,7 @@ router.post("/sign-up", (req, res) => {
         });
         const verifyUrl = `${websiteUrl}/new-user/${token}`;
 
-        console.log(`token: ${token}`);
-        res.json({ msg: "valid" });
+        //send verification mail to: req.body.email , with: verifyUrl
         var mailOptions = {
           from: process.env.EMAIL_ADDRESS,
           to: data.email,
@@ -57,25 +56,19 @@ router.post("/sign-up", (req, res) => {
           html: `<h2> ${data.firstName}! Thanks for registering on our site </h2>
                    <h4> Please verify you mail to continue...</h4>
                    <a href="${verifyUrl}">${verifyUrl}</a>`,
-          //attachDataUrls: true
         };
-
         transporter.sendMail(mailOptions, function (error, info) {
           if (error) {
             console.log("sendmailfail " + error);
+            res.status(500).json({ error: 'Sorry internal server error. Try again later' })
           } else {
-            res.json({
-              auth: true,
-              token: token,
-              result: data,
-            });
+            res.json({ msg: "Verification email was sent" });
           }
         });
-        //send verification mail to: req.body.email , with: verifyUrl
       } else {
         res
           .status(409)
-          .json({ msg: "There is already a user with this email." });
+          .json({ error: "There is already a user with this email." });
       }
     })
     .catch((err) => {
@@ -200,6 +193,7 @@ router.put("/profile/updatemail", (req, res) => {
               expiresIn: expiration,
             });
 
+            //send verification mail to: req.body.email , with: verifyUrl
             const verifyUrl = `${websiteUrl}/update-email/${token}`
             var mailOptions = {
               from: process.env.EMAIL_ADDRESS,
@@ -209,7 +203,6 @@ router.put("/profile/updatemail", (req, res) => {
                    <h4> Please click to verify your email changing in our shop.</h4>
                    <a href="${verifyUrl}">${verifyUrl}</a>`,
             };
-
             transporter.sendMail(mailOptions, function (error, info) {
               if (error) {
                 console.log("sendmailfail " + error);
@@ -222,7 +215,6 @@ router.put("/profile/updatemail", (req, res) => {
               }
             });
             console.log(`jwt: ${token} , data: ${JSON.stringify(emailObj)}`);
-            //send verification mail to: req.body.email , with: verifyUrl
 
             res.json({
               msg: `In order to update your email we sent a verification link to your current mail. The link will be expired in ${expiration}`,
@@ -348,7 +340,7 @@ router.post("/recaptcha", async (req, res, next) => {
 });
 
 router.post("/forgot", async (req, res) => {
-  User.findOne({ email: req.body.email .toLowerCase()})
+  User.findOne({ email: req.body.email.toLowerCase() })
     .then((data) => {
       if (!data) {
         res.status(401).json({ error: "Invalid Email" });
@@ -406,11 +398,11 @@ router.post("/forgot/token", (req, res) => {
         jwt.verify(decoded.passwordJwt, data.password)
         res.json({ msg: "verified", email: decoded.email });
       }).catch(err => {
-        
+
         res.status(409).json({ error: "This link is expired" })
-        
+
       })
-   
+
   } catch (err) {
     switch (err.name) {
       case "TokenExpiredError":
