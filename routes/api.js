@@ -13,7 +13,7 @@ const websiteUrl = process.env.WEB_URL || `http://localhost:3000`;
 
 const nodemailer = require("nodemailer");
 var transporter = nodemailer.createTransport({
-  service: "gmail",
+  service: "hotmail",
   auth: {
     user: process.env.EMAIL_ADDRESS,
     pass: process.env.EMAIL_PASSWORD,
