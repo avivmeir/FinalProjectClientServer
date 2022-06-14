@@ -61,7 +61,7 @@ router.post("/sign-up", (req, res) => {
         transporter.sendMail(mailOptions, function (error, info) {
           if (error) {
             console.log("sendmailfail " + error);
-            res.status(500).json({ error: 'Sorry internal server error. Try again later' })
+            res.status(500).json({ error: 'Sorry internal server error when trying to send Email. Try again later' })
           } else {
             res.json({ msg: "Verification email was sent" });
           }
@@ -207,6 +207,7 @@ router.put("/profile/updatemail", (req, res) => {
             transporter.sendMail(mailOptions, function (error, info) {
               if (error) {
                 console.log("sendmailfail " + error);
+                res.status(500).json({ error: 'Sorry internal server error when trying to send Email. Try again later' })
               } else {
                 res.json({
                   auth: true,
@@ -365,6 +366,8 @@ router.post("/forgot", async (req, res) => {
         transporter.sendMail(mailOptions, function (error, info) {
           if (error) {
             console.log("sendmailfail " + error);
+            res.status(500).json({ error: 'Sorry internal server error when trying to send Email. Try again later' })
+
           } else {
             res.json({
               auth: true,
@@ -447,6 +450,7 @@ router.put("/forgot/changepassword", (req, res) => {
           transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
               console.log("sendmailfail " + error);
+              res.status(500).json({ error: 'Sorry internal server error when trying to send Email. Try again later' })
             } else {
               res.json({
                 token: token,
